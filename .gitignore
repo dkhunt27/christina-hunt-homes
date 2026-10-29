@@ -1,0 +1,21 @@
+node_modules
+dist
+dist-ssr
+*.local
+*.log
+*.tsbuildinfo
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.staging
+!.env.example
+
+supabase/.temp/*

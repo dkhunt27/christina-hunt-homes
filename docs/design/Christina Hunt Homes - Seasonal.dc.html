@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Caveat:wght@500;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F3ECDF;color:#23211E;font-family:'Figtree',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#23211E;text-decoration-color:#C9A64A;text-underline-offset:3px}
+a:hover{color:#7C5A2A}
+input,select,button,textarea{font-family:inherit}
+@media print{header,footer,.noprint{display:none!important}}
+@keyframes chFall{from{transform:translateY(-40px)}to{transform:translateY(110vh)}}
+@keyframes chSway{0%,100%{transform:translateX(-16px) rotate(-30deg)}50%{transform:translateX(16px) rotate(30deg)}}
+@media (prefers-reduced-motion:reduce){[data-fx]{display:none!important}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column;background-color:var(--bg,#F3ECDF);background-image:repeating-linear-gradient(180deg,transparent 0 63px,rgba(110,90,60,.12) 63px 64px);transition:background-color .4s;">
+
+<div class="noprint" style="background:var(--panel,#7A4A2E);color:#FBF6EC;font-size:14px;transition:background .4s;">
+  <div style="max-width:1200px;margin:0 auto;padding:9px 24px;display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;text-align:center;">
+    <span>{{ seasonBanner }}</span>
+    <button onClick="{{ goEvents }}" style="border:0;background:transparent;color:var(--acc,#E3A857);font-weight:700;font-size:14px;cursor:pointer;padding:0;">See what's on near you →</button>
+  </div>
+</div>
+
+<header style="position:sticky;top:0;z-index:30;background:#FBF8F1;">
+  <div style="max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+    <button onClick="{{ goHome }}" style="all:unset;cursor:pointer;display:flex;flex-direction:column;">
+      <span style="font-family:'Young Serif',serif;font-size:23px;line-height:1;color:#23211E;">Christina Hunt</span>
+      <span style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#7A6E5C;margin-top:5px;">Real Estate One · Southeast Michigan</span>
+    </button>
+    <nav style="display:flex;gap:2px;flex-wrap:wrap;flex:1;min-width:0;">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="7">
+        <button onClick="{{ n.onClick }}" style="font-size:15px;font-weight:500;border:0;cursor:pointer;padding:9px 12px;border-radius:6px;background:{{ n.bg }};color:#23211E;">{{ n.label }}</button>
+      </sc-for>
+    </nav>
+    <sc-if value="{{ signedIn }}" hint-placeholder-val="{{ false }}">
+      <span style="font-size:14px;color:#5E5444;display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:#7FA06A;"></span>{{ userLabel }}</span>
+    </sc-if>
+    <sc-if value="{{ signedOut }}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{ openSignIn }}" style="font-size:14px;font-weight:600;border:1px solid #23211E;background:transparent;color:#23211E;padding:9px 16px;border-radius:6px;cursor:pointer;">Sign in with phone</button>
+    </sc-if>
+  </div>
+  <div style="height:10px;border-top:2px solid #23211E;background-color:var(--gingB,#FBF8F1);background-image:linear-gradient(90deg,var(--gingC,rgba(196,98,45,.45)) 50%,transparent 50%),linear-gradient(var(--gingC,rgba(196,98,45,.45)) 50%,transparent 50%);background-size:10px 10px;"></div>
+</header>
+
+<main style="flex:1;">
+{{ pageFx }}
+
+<!-- HOME -->
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <section data-screen-label="Home" style="position:relative;isolation:isolate;max-width:1200px;margin:0 auto;padding:56px 24px 40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:56px;align-items:center;">
+    {{ heroFx }}
+    <div style="display:flex;flex-direction:column;gap:20px;">
+      <span style="font-family:'Caveat',cursive;font-size:32px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">{{ seasonEyebrow }}</span>
+      <h1 style="font-family:'Young Serif',serif;font-weight:400;font-size:clamp(40px,5.4vw,62px);line-height:1.05;margin:0;text-wrap:balance;">Come on in. Let's find <span style="background:linear-gradient(transparent 62%,var(--acc,#E3A857) 62%);">your place</span> in Southeast Michigan.</h1>
+      <p style="font-size:18px;line-height:1.6;color:#5E5444;margin:0;max-width:520px;text-wrap:pretty;">Every listing from Detroit to Ann Arbor and Brighton to the Pointes, all in one place. Heart homes without an account, and I'm a text away when you're ready.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;background:#FFFDF8;border:1px solid #E8DFCC;border-radius:10px;padding:8px;box-shadow:0 8px 24px rgba(80,60,30,.06);">
+        <input value="{{ q }}" onChange="{{ onQ }}" onKeyDown="{{ onHeroKey }}" placeholder="City, neighborhood, county, or ZIP" style="flex:1;min-width:200px;border:0;background:transparent;font-size:17px;padding:12px 14px;outline:none;color:#23211E;">
+        <button onClick="{{ goSearch }}" style="border:0;background:#23211E;color:#FBF6EC;font-size:16px;font-weight:600;padding:14px 24px;border-radius:6px;cursor:pointer;">Search homes</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <span style="font-size:14px;color:#7A6E5C;">Places I love:</span>
+        <sc-for list="{{ hoods }}" as="h" hint-placeholder-count="8">
+          <button onClick="{{ h.onClick }}" style="font-size:14px;border:1px solid #E0D4BC;background:#FFFDF8;color:#23211E;padding:7px 12px;border-radius:6px;cursor:pointer;" style-hover="background:#F7EBC6;">{{ h.name }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="position:relative;aspect-ratio:4/5;width:100%;max-width:470px;justify-self:center;border-radius:50% 50% 14px 14px / 40% 40% 14px 14px;background:repeating-linear-gradient(135deg,#EFE5D0 0 10px,#F6EFE0 10px 20px);outline:10px solid #FBF8F1;outline-offset:-1px;box-shadow:0 0 0 12px #23211E;display:flex;align-items:center;justify-content:center;">
+      <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#8A7D66;">{{ porchCaption }}</span>
+      <div style="position:absolute;left:-28px;bottom:28px;background:#FFFDF8;border:1px solid #E8DFCC;border-radius:10px;padding:14px 18px;box-shadow:0 10px 30px rgba(80,60,30,.14);display:flex;flex-direction:column;gap:2px;">
+        <span style="font-size:13px;color:#7A6E5C;">Questions? Just text me.</span>
+        <span style="font-family:'Young Serif',serif;font-size:20px;">(313) 555-0142</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1200px;margin:0 auto;padding:32px 24px;">
+    <div style="display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:22px;">
+      <div style="display:flex;flex-direction:column;gap:4px;"><span style="font-family:'Caveat',cursive;font-size:28px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">Just listed</span><h2 style="font-family:'Young Serif',serif;font-weight:400;font-size:34px;margin:0;">Fresh on the market</h2></div>
+      <button onClick="{{ goSearch }}" style="border:0;background:transparent;font-size:16px;font-weight:600;color:var(--ink,#8A4B2E);cursor:pointer;padding:8px 0;">See all homes →</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:22px;">
+      <sc-for list="{{ featured }}" as="l" hint-placeholder-count="3">
+        <dc-import name="Listing Card" l="{{ l }}" hint-size="100%,380px"></dc-import>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1200px;margin:0 auto;padding:32px 24px;">
+    <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:12px;padding:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:24px;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <span style="font-family:'Caveat',cursive;font-size:28px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">Around here this {{ seasonName }}</span>
+        <h2 style="font-family:'Young Serif',serif;font-weight:400;font-size:28px;line-height:1.15;margin:0;">Things I'd put on the calendar</h2>
+        <button onClick="{{ goEvents }}" style="align-self:start;margin-top:auto;border:0;background:transparent;font-size:15px;font-weight:600;color:var(--ink,#8A4B2E);cursor:pointer;padding:6px 0;">Town guides & events →</button>
+      </div>
+      <sc-for list="{{ eventsTop }}" as="e" hint-placeholder-count="3">
+        <div style="display:flex;flex-direction:column;gap:6px;border-left:3px solid var(--acc,#E3A857);padding-left:16px;">
+          <span style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7A6E5C;">{{ e.when }}</span>
+          <span style="font-family:'Young Serif',serif;font-size:20px;line-height:1.2;">{{ e.name }}</span>
+          <span style="font-size:14px;color:#5E5444;">{{ e.where }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1200px;margin:0 auto;padding:32px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:22px;">
+    <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;">
+      <div style="height:12px;background-color:var(--gingB,#FBF8F1);background-image:linear-gradient(90deg,var(--gingC,rgba(196,98,45,.45)) 50%,transparent 50%),linear-gradient(var(--gingC,rgba(196,98,45,.45)) 50%,transparent 50%);background-size:12px 12px;"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));flex:1;">
+        <div style="min-height:200px;background:repeating-linear-gradient(135deg,#EFE5D0 0 10px,#F6EFE0 10px 20px);display:flex;align-items:center;justify-content:center;"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8A7D66;">recipe photo</span></div>
+        <div style="padding:26px;display:flex;flex-direction:column;gap:10px;">
+          <span style="font-family:'Caveat',cursive;font-size:28px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">In my kitchen · {{ seasonName }}</span>
+          <h3 style="font-family:'Young Serif',serif;font-weight:400;font-size:25px;line-height:1.15;margin:0;">{{ heroRecipe.name }}</h3>
+          <p style="font-size:15px;line-height:1.55;color:#5E5444;margin:0;">{{ heroRecipe.note }}</p>
+          <button onClick="{{ goKitchen }}" style="align-self:start;margin-top:auto;border:0;background:transparent;font-size:15px;font-weight:600;color:var(--ink,#8A4B2E);cursor:pointer;padding:6px 0;">Get the recipe →</button>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--panel,#7A4A2E);color:#FBF6EC;border-radius:12px;padding:30px;display:flex;flex-direction:column;gap:14px;transition:background .4s;">
+      <span style="font-family:'Caveat',cursive;font-size:28px;line-height:1;color:var(--acc,#E3A857);font-weight:700;">Your to-do list</span>
+      <h3 style="font-family:'Young Serif',serif;font-weight:400;font-size:28px;line-height:1.15;margin:0;">Buying, selling, or moving, step by step</h3>
+      <p style="font-size:15px;line-height:1.55;color:#F1E9DB;margin:0;">Check things off as you go. Your progress saves on this device, no account needed.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px;">
+        <sc-for list="{{ progressRows }}" as="p" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;font-size:14px;"><span>{{ p.label }}</span><span style="color:#F1E9DB;">{{ p.text }}</span></div>
+            <div style="height:8px;border-radius:6px;background:var(--panelDeep,#643C24);overflow:hidden;"><div style="height:100%;width:{{ p.pct }};background:var(--acc,#E3A857);border-radius:6px;"></div></div>
+          </div>
+        </sc-for>
+      </div>
+      <button onClick="{{ goLists }}" style="align-self:start;margin-top:auto;border:0;background:var(--acc,#E3A857);color:#23211E;font-size:15px;font-weight:600;padding:12px 20px;border-radius:6px;cursor:pointer;">Open my checklist</button>
+    </div>
+  </section>
+
+  <section style="max-width:1200px;margin:0 auto;padding:32px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:22px;">
+    <div style="background:var(--accSoft,#F4E0C2);border-radius:14px;padding:30px;display:flex;flex-direction:column;gap:14px;transition:background .4s;">
+      <h2 style="font-family:'Young Serif',serif;font-weight:400;font-size:30px;line-height:1.1;margin:0;">Curious what your home is worth?</h2>
+      <p style="font-size:16px;line-height:1.6;color:#4A4236;margin:0;">Not a robot estimate. I'll look at real sales on your street and text you an honest number within a day. No pressure to list.</p>
+      <sc-if value="{{ worthOpen }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <input value="{{ worthAddr }}" onChange="{{ onWorthAddr }}" placeholder="Your home address" style="font-size:16px;padding:14px 16px;border-radius:6px;border:1px solid #D9C9A8;background:#FFFDF8;outline:none;">
+          <input value="{{ worthPhone }}" onChange="{{ onWorthPhone }}" placeholder="Mobile number" inputmode="tel" style="font-size:16px;padding:14px 16px;border-radius:6px;border:1px solid #D9C9A8;background:#FFFDF8;outline:none;">
+          <button onClick="{{ sendWorth }}" style="border:0;background:#23211E;color:#FBF6EC;font-size:16px;font-weight:600;padding:14px;border-radius:6px;cursor:pointer;">Text me my estimate</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ worthSent }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FFFDF8;border-radius:10px;padding:20px;font-size:16px;line-height:1.55;">Got it, thank you! I'll text you a no-pressure estimate for <strong>{{ worthAddr }}</strong> within a day. — Christina</div>
+      </sc-if>
+    </div>
+    <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:14px;padding:30px;display:flex;flex-direction:column;gap:14px;">
+      <span style="font-family:'Caveat',cursive;font-size:28px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">Once a month, on the porch</span>
+      <h2 style="font-family:'Young Serif',serif;font-weight:400;font-size:30px;line-height:1.1;margin:0;">The Porch Report</h2>
+      <p style="font-size:16px;line-height:1.6;color:#5E5444;margin:0;">What homes sold for in your county, one seasonal recipe, and one home tip. Short enough to read with your morning coffee.</p>
+      <sc-if value="{{ porchOpen }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input value="{{ porchContact }}" onChange="{{ onPorch }}" placeholder="Email or mobile number" style="flex:1;min-width:200px;font-size:16px;padding:14px 16px;border-radius:6px;border:1px solid #E0D4BC;background:#FBF8F1;outline:none;">
+          <button onClick="{{ sendPorch }}" style="border:0;background:var(--acc,#E3A857);color:#23211E;font-size:16px;font-weight:600;padding:14px 20px;border-radius:6px;cursor:pointer;">Sign me up</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ porchSent }}" hint-placeholder-val="{{ false }}">
+        <div style="background:var(--accSoft,#F4E0C2);border-radius:10px;padding:16px 18px;font-size:16px;">You're on the list. First issue lands the first of the month.</div>
+      </sc-if>
+    </div>
+  </section>
+
+  <section style="max-width:1200px;margin:0 auto;padding:40px 24px 24px;">
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:22px;"><span style="font-family:'Caveat',cursive;font-size:28px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">Welcome home</span><h2 style="font-family:'Young Serif',serif;font-weight:400;font-size:34px;margin:0;">Stories from my clients</h2></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:22px;">
+      <sc-for list="{{ stories }}" as="s" hint-placeholder-count="3">
+        <figure style="margin:0;background:#FFFDF8;border:1px solid #E8DFCC;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;">
+          <div style="aspect-ratio:3/2;background:repeating-linear-gradient(135deg,#EFE5D0 0 10px,#F6EFE0 10px 20px);display:flex;align-items:center;justify-content:center;"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8A7D66;">photo · {{ s.who }} at their new front door</span></div>
+          <blockquote style="margin:0;padding:20px 22px 8px;font-family:'Young Serif',serif;font-size:18px;line-height:1.45;">“{{ s.quote }}”</blockquote>
+          <figcaption style="padding:0 22px 22px;font-size:14px;color:#7A6E5C;">{{ s.who }} · {{ s.where }}</figcaption>
+        </figure>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1200px;margin:0 auto;padding:48px 24px 72px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:48px;align-items:center;">
+    <div style="position:relative;aspect-ratio:16/10;border-radius:10px;background:repeating-linear-gradient(135deg,#EFE5D0 0 10px,#F6EFE0 10px 20px);border:10px solid #FBF8F1;box-shadow:0 0 0 2px #23211E;display:flex;align-items:center;justify-content:center;">
+      <span style="position:absolute;bottom:14px;left:16px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8A7D66;">60-second welcome video</span>
+      <button onClick="{{ playVideo }}" aria-label="Play video" style="width:84px;height:84px;border-radius:50%;border:0;background:#23211E;color:#FBF6EC;font-size:28px;cursor:pointer;padding-left:6px;">▶</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <span style="font-family:'Caveat',cursive;font-size:30px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">Hi, I'm Christina</span>
+      <h2 style="font-family:'Young Serif',serif;font-weight:400;font-size:36px;line-height:1.12;margin:0;text-wrap:balance;">I help Southeast Michigan families buy and sell homes like a good neighbor would.</h2>
+      <p style="font-size:17px;line-height:1.65;color:#5E5444;margin:0;text-wrap:pretty;">I'm with Real Estate One and know this corner of Michigan street by street, from Corktown rowhouses and Royal Oak bungalows to Ann Arbor craftsmen and lake cottages in Livingston County. I made this site so you can search in peace, save what you love, and reach me without filling out ten forms.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
+        <a href="sms:+13135550142" style="text-decoration:none;background:#23211E;color:#FBF6EC;font-weight:600;padding:13px 20px;border-radius:6px;">Text Christina</a>
+        <a href="mailto:christina@example.com" style="text-decoration:none;border:1px solid #23211E;color:#23211E;font-weight:600;padding:12px 20px;border-radius:6px;">Email me</a>
+      </div>
+    </div>
+  </section>
+</sc-if>
+
+<!-- SEARCH -->
+<sc-if value="{{ isSearch }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="Search" style="max-width:1400px;margin:0 auto;padding:28px 24px 56px;display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;">
+      <div>
+        <h1 style="font-family:'Young Serif',serif;font-weight:400;font-size:38px;margin:0;">Find a home</h1>
+        <p style="margin:6px 0 0;color:#7A6E5C;font-size:15px;">{{ resultCount }} homes match · updated from the MLS every 15 minutes</p>
+      </div>
+      <button onClick="{{ saveSearch }}" style="border:0;background:var(--acc,#E3A857);color:#23211E;font-size:15px;font-weight:600;padding:12px 18px;border-radius:6px;cursor:pointer;">Text me new matches</button>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;background:#FFFDF8;border:1px solid #E8DFCC;border-radius:10px;padding:10px;">
+      <input value="{{ q }}" onChange="{{ onQ }}" placeholder="City, neighborhood, county, or ZIP" style="flex:2;min-width:200px;font-size:16px;padding:12px 14px;border-radius:6px;border:1px solid #E8DFCC;background:#FBF6EC;outline:none;">
+      <select value="{{ maxPrice }}" onChange="{{ onMaxPrice }}" style="flex:1;min-width:130px;font-size:15px;padding:12px;border-radius:6px;border:1px solid #E8DFCC;background:#FBF6EC;">
+        <option value="any">Any price</option><option value="250000">Up to $250k</option><option value="400000">Up to $400k</option><option value="500000">Up to $500k</option><option value="750000">Up to $750k</option>
+      </select>
+      <select value="{{ beds }}" onChange="{{ onBeds }}" style="flex:1;min-width:110px;font-size:15px;padding:12px;border-radius:6px;border:1px solid #E8DFCC;background:#FBF6EC;">
+        <option value="0">Any beds</option><option value="2">2+ beds</option><option value="3">3+ beds</option><option value="4">4+ beds</option>
+      </select>
+      <select value="{{ type }}" onChange="{{ onType }}" style="flex:1;min-width:120px;font-size:15px;padding:12px;border-radius:6px;border:1px solid #E8DFCC;background:#FBF6EC;">
+        <option value="Any">Any type</option><option value="House">House</option><option value="Condo">Condo</option><option value="Townhome">Townhome</option>
+      </select>
+      <select value="{{ county }}" onChange="{{ onCounty }}" style="flex:1;min-width:130px;font-size:15px;padding:12px;border-radius:6px;border:1px solid #E8DFCC;background:#FBF6EC;">
+        <option value="Any">All counties</option><option value="Wayne">Wayne</option><option value="Oakland">Oakland</option><option value="Macomb">Macomb</option><option value="Washtenaw">Washtenaw</option><option value="Livingston">Livingston</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:var(--accSoft,#F4E0C2);border-radius:10px;padding:10px 14px;">
+      <span style="font-size:15px;font-weight:600;">Commute:</span>
+      <select value="{{ maxMin }}" onChange="{{ onMaxMin }}" style="font-size:15px;padding:10px;border-radius:6px;border:1px solid #D9C9A8;background:#FFFDF8;">
+        <option value="20">within 20 min</option><option value="30">within 30 min</option><option value="45">within 45 min</option>
+      </select>
+      <span style="font-size:15px;">of</span>
+      <select value="{{ dest }}" onChange="{{ onDest }}" style="font-size:15px;padding:10px;border-radius:6px;border:1px solid #D9C9A8;background:#FFFDF8;">
+        <option value="none">anywhere (off)</option><option value="detroit">Downtown Detroit</option><option value="annarbor">Downtown Ann Arbor</option><option value="troy">Troy</option><option value="dtw">DTW Airport</option>
+      </select>
+      <span style="font-size:13px;color:#5E5444;">Typical weekday morning drive</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:22px;align-items:start;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:18px;">
+        <sc-for list="{{ results }}" as="l" hint-placeholder-count="6">
+          <dc-import name="Listing Card" l="{{ l }}" hint-size="100%,380px"></dc-import>
+        </sc-for>
+        <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+          <div style="grid-column:1/-1;background:#FFFDF8;border:1px dashed #D9CCB0;border-radius:10px;padding:32px;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;">
+            <span style="font-family:'Young Serif',serif;font-size:22px;">Nothing yet. But homes come on daily.</span>
+            <span style="color:#5E5444;">Tap "Text me new matches" and I'll let you know the moment one fits.</span>
+            <button onClick="{{ clearFilters }}" style="border:1px solid #23211E;background:transparent;font-weight:600;padding:10px 16px;border-radius:6px;cursor:pointer;">Clear filters</button>
+          </div>
+        </sc-if>
+      </div>
+      <sc-if value="{{ showMap }}" hint-placeholder-val="{{ true }}">
+        <div style="position:sticky;top:110px;min-height:560px;height:calc(100vh - 160px);max-height:760px;border-radius:12px;border:1px solid #E8DFCC;background:repeating-linear-gradient(135deg,#ECE6D6 0 12px,#F3EEE2 12px 24px);overflow:hidden;">
+          <span style="position:absolute;left:16px;bottom:14px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8A7D66;background:#FBF6EC;padding:4px 8px;border-radius:6px;">map · Southeast Michigan · Mapbox / Google tiles</span>
+          <sc-for list="{{ results }}" as="l" hint-placeholder-count="0">
+            <button onClick="{{ l.onOpen }}" style="position:absolute;left:{{ l.pinX }};top:{{ l.pinY }};transform:translate(-50%,-50%);border:2px solid #FFFDF8;background:#23211E;color:#FBF6EC;font-size:13px;font-weight:600;padding:6px 10px;border-radius:6px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.18);" style-hover="background:#7C5A2A;">{{ l.priceShort }}</button>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </section>
+</sc-if>
+
+<!-- LISTING DETAIL -->
+<sc-if value="{{ isListing }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="Listing" style="max-width:1200px;margin:0 auto;padding:24px 24px 64px;display:flex;flex-direction:column;gap:24px;">
+    <button onClick="{{ goSearch }}" style="align-self:start;border:0;background:transparent;font-size:15px;font-weight:600;color:var(--ink,#8A4B2E);cursor:pointer;padding:6px 0;">← Back to search</button>
+    <div style="display:grid;grid-template-columns:2fr 1fr;grid-template-rows:repeat(2,minmax(140px,220px));gap:10px;border-radius:12px;overflow:hidden;">
+      <div style="grid-row:1/3;background:repeating-linear-gradient(135deg,#EFE5D0 0 10px,#F6EFE0 10px 20px);display:flex;align-items:center;justify-content:center;"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8A7D66;">front exterior · IDX photo 1</span></div>
+      <div style="background:repeating-linear-gradient(135deg,#EFE5D0 0 10px,#F6EFE0 10px 20px);display:flex;align-items:center;justify-content:center;"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8A7D66;">kitchen</span></div>
+      <div style="background:repeating-linear-gradient(135deg,#EFE5D0 0 10px,#F6EFE0 10px 20px);display:flex;align-items:center;justify-content:center;"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8A7D66;">+ 24 photos</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:36px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:18px;">
+        <div style="display:flex;justify-content:space-between;gap:16px;align-items:start;flex-wrap:wrap;">
+          <div>
+            <span style="display:inline-block;background:#FBF8F1;border:1px solid #23211E;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 9px;border-radius:3px;margin-bottom:10px;">{{ cur.status }}</span>
+            <h1 style="font-family:'Young Serif',serif;font-weight:400;font-size:44px;margin:0;line-height:1;">{{ cur.priceFmt }}</h1>
+            <div style="font-size:19px;margin-top:10px;">{{ cur.address }}</div>
+            <div style="font-size:15px;color:#7A6E5C;margin-top:2px;">{{ cur.area }}, {{ cur.city }}, MI · {{ cur.county }} County</div>
+          </div>
+          <button onClick="{{ cur.onFav }}" style="border:1px solid #E0D4BC;background:#FFFDF8;color:#23211E;font-size:15px;font-weight:600;padding:12px 16px;border-radius:6px;cursor:pointer;display:flex;gap:8px;align-items:center;"><span style="color:{{ cur.favColor }};font-size:18px;">{{ cur.heart }}</span>{{ cur.favLabel }}</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid #E8DFCC;border-radius:10px;background:#FFFDF8;">
+          <div style="padding:16px;border-right:1px solid #E8DFCC;"><div style="font-family:'Young Serif',serif;font-size:24px;">{{ cur.beds }}</div><div style="font-size:13px;color:#7A6E5C;">bedrooms</div></div>
+          <div style="padding:16px;border-right:1px solid #E8DFCC;"><div style="font-family:'Young Serif',serif;font-size:24px;">{{ cur.baths }}</div><div style="font-size:13px;color:#7A6E5C;">baths</div></div>
+          <div style="padding:16px;border-right:1px solid #E8DFCC;"><div style="font-family:'Young Serif',serif;font-size:24px;">{{ cur.sqftFmt }}</div><div style="font-size:13px;color:#7A6E5C;">sq ft</div></div>
+          <div style="padding:16px;"><div style="font-family:'Young Serif',serif;font-size:24px;">{{ cur.year }}</div><div style="font-size:13px;color:#7A6E5C;">built</div></div>
+        </div>
+        <p style="font-size:17px;line-height:1.7;color:#4A4236;margin:0;text-wrap:pretty;">{{ cur.desc }}</p>
+        <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:10px;padding:20px 22px;">
+          <div style="font-family:'Caveat',cursive;font-size:26px;color:var(--ink,#8A4B2E);font-weight:700;margin-bottom:10px;">Christina's notes</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <sc-for list="{{ cur.features }}" as="f" hint-placeholder-count="4">
+              <div style="display:flex;gap:12px;font-size:16px;line-height:1.5;"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:var(--acc,#E3A857);margin-top:8px;"></span><span>{{ f }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:10px;padding:20px 22px;display:flex;flex-direction:column;gap:12px;">
+          <div style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7A6E5C;">Drive times · weekday morning</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;">
+            <sc-for list="{{ cur.commutes }}" as="c" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;"><span style="font-family:'Young Serif',serif;font-size:22px;">{{ c.min }} min</span><span style="font-size:13px;color:#7A6E5C;">{{ c.label }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:10px;overflow:hidden;">
+          <div style="height:10px;background-color:var(--gingB,#FBF8F1);background-image:linear-gradient(90deg,var(--gingC,rgba(196,98,45,.45)) 50%,transparent 50%),linear-gradient(var(--gingC,rgba(196,98,45,.45)) 50%,transparent 50%);background-size:10px 10px;"></div>
+          <div style="padding:20px 22px;display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;">
+              <span style="font-family:'Young Serif',serif;font-size:22px;">My tour notes</span>
+              <span style="font-size:13px;color:#7A6E5C;">{{ noteStatus }}</span>
+            </div>
+            <sc-for list="{{ rateRows }}" as="r" hint-placeholder-count="4">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+                <span style="font-size:15px;">{{ r.label }}</span>
+                <div style="display:flex;gap:6px;">
+                  <sc-for list="{{ r.dots }}" as="d" hint-placeholder-count="5">
+                    <button onClick="{{ d.onClick }}" aria-label="{{ d.aria }}" style="width:30px;height:30px;border-radius:50%;border:2px solid #C9A64A;background:{{ d.bg }};cursor:pointer;padding:0;"></button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+            <textarea value="{{ noteText }}" onChange="{{ onNoteText }}" placeholder="Loved the porch. Basement smelled damp? Ask about the roof age…" rows="3" style="font-size:15px;line-height:1.5;padding:12px 14px;border-radius:6px;border:1px solid #E0D4BC;background:#FBF8F1;outline:none;resize:vertical;"></textarea>
+          </div>
+        </div>
+        <p style="font-size:12px;color:#8A7D66;margin:0;">Listing courtesy of the listing brokerage via Realcomp MLS IDX. Information deemed reliable but not guaranteed.</p>
+      </div>
+      <div style="position:sticky;top:110px;display:flex;flex-direction:column;gap:16px;">
+        <div style="background:var(--panel,#7A4A2E);color:#FBF6EC;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px;transition:background .4s;">
+          <h3 style="font-family:'Young Serif',serif;font-weight:400;font-size:24px;margin:0;">Come see it in person</h3>
+          <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;">
+            <sc-for list="{{ tourDays }}" as="d" hint-placeholder-count="5">
+              <button onClick="{{ d.onClick }}" style="border:1px solid rgba(255,255,255,.35);background:{{ d.bg }};color:{{ d.color }};border-radius:6px;padding:10px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;"><span style="font-size:12px;">{{ d.dow }}</span><span style="font-size:18px;font-weight:600;">{{ d.date }}</span></button>
+            </sc-for>
+          </div>
+          <sc-if value="{{ tourOpen }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ requestTour }}" style="border:0;background:var(--acc,#E3A857);color:#23211E;font-size:16px;font-weight:600;padding:14px;border-radius:6px;cursor:pointer;">Request a tour</button>
+          </sc-if>
+          <sc-if value="{{ tourSent }}" hint-placeholder-val="{{ false }}">
+            <div style="background:var(--panelDeep,#643C24);border-radius:6px;padding:14px;font-size:15px;line-height:1.5;">You're on my calendar for {{ tourLabel }}. I'll text you to confirm a time.</div>
+          </sc-if>
+          <a href="sms:+13135550142" style="color:var(--acc,#E3A857);font-size:15px;font-weight:600;">Or just text me a question</a>
+        </div>
+        <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:6px;">
+          <span style="font-size:13px;color:#7A6E5C;">Estimated payment</span>
+          <span style="font-family:'Young Serif',serif;font-size:30px;">{{ cur.monthly }}<span style="font-family:'Figtree',sans-serif;font-size:15px;color:#7A6E5C;"> /mo</span></span>
+          <span style="font-size:13px;color:#7A6E5C;line-height:1.5;">20% down, 30-yr fixed at 6.5%, plus est. taxes and insurance. I can connect you with a great local lender.</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;margin-top:12px;">
+      <h2 style="font-family:'Young Serif',serif;font-weight:400;font-size:28px;margin:0;">Homes like this one</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:18px;">
+        <sc-for list="{{ similar }}" as="l" hint-placeholder-count="3">
+          <dc-import name="Listing Card" l="{{ l }}" hint-size="100%,380px"></dc-import>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+</sc-if>
+
+<!-- TOWNS -->
+<sc-if value="{{ isTowns }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="Towns" style="max-width:1200px;margin:0 auto;padding:36px 24px 64px;display:flex;flex-direction:column;gap:40px;">
+    <sc-if value="{{ noTown }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:22px;">
+        <div>
+          <span style="font-family:'Caveat',cursive;font-size:30px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">Around here</span>
+          <h1 style="font-family:'Young Serif',serif;font-weight:400;font-size:44px;margin:6px 0 0;">Town guides</h1>
+          <p style="font-size:17px;color:#5E5444;margin:8px 0 0;max-width:640px;line-height:1.55;">The honest scoop on the places I sell in most: schools, getting around, and where I'd spend a Saturday.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:18px;">
+          <sc-for list="{{ towns }}" as="t" hint-placeholder-count="8">
+            <button onClick="{{ t.onOpen }}" style="all:unset;cursor:pointer;background:#FFFDF8;border:1px solid #E8DFCC;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;" style-hover="box-shadow:0 12px 30px rgba(80,60,30,.12);">
+              <div style="aspect-ratio:16/10;background:repeating-linear-gradient(135deg,#EFE5D0 0 10px,#F6EFE0 10px 20px);display:flex;align-items:center;justify-content:center;"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8A7D66;">photo · {{ t.name }}</span></div>
+              <div style="padding:16px 18px 20px;display:flex;flex-direction:column;gap:6px;">
+                <span style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7A6E5C;">{{ t.county }} County · {{ t.count }}</span>
+                <span style="font-family:'Young Serif',serif;font-size:23px;">{{ t.name }}</span>
+                <span style="font-size:14px;line-height:1.5;color:#5E5444;">{{ t.tag }}</span>
+              </div>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ hasTown }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:22px;">
+        <button onClick="{{ closeTown }}" style="align-self:start;border:0;background:transparent;font-size:15px;font-weight:600;color:var(--ink,#8A4B2E);cursor:pointer;padding:6px 0;">← All towns</button>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:36px;align-items:start;">
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <span style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7A6E5C;">{{ town.county }} County</span>
+            <h1 style="font-family:'Young Serif',serif;font-weight:400;font-size:48px;margin:0;line-height:1;">{{ town.name }}</h1>
+            <p style="font-family:'Young Serif',serif;font-size:21px;line-height:1.4;margin:0;">{{ town.tag }}</p>
+            <p style="font-size:17px;line-height:1.7;color:#4A4236;margin:0;text-wrap:pretty;">{{ town.vibe }}</p>
+            <button onClick="{{ town.onSearch }}" style="align-self:start;border:0;background:#23211E;color:#FBF6EC;font-size:15px;font-weight:600;padding:13px 20px;border-radius:6px;cursor:pointer;margin-top:6px;">Search homes in {{ town.name }}</button>
+          </div>
+          <div style="aspect-ratio:4/3;border-radius:10px;background:repeating-linear-gradient(135deg,#EFE5D0 0 10px,#F6EFE0 10px 20px);border:10px solid #FBF8F1;box-shadow:0 0 0 2px #23211E;display:flex;align-items:center;justify-content:center;"><span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#8A7D66;">photo · downtown {{ town.name }}</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px;">
+          <sc-for list="{{ town.facts }}" as="f" hint-placeholder-count="4">
+            <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:6px;">
+              <span style="font-family:'Caveat',cursive;font-size:24px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">{{ f.k }}</span>
+              <span style="font-size:15px;line-height:1.5;">{{ f.v }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:18px;">
+          <sc-for list="{{ town.homes }}" as="l" hint-placeholder-count="2">
+            <dc-import name="Listing Card" l="{{ l }}" hint-size="100%,380px"></dc-import>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <div id="events" style="display:flex;flex-direction:column;gap:18px;">
+      <div><span style="font-family:'Caveat',cursive;font-size:28px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">This {{ seasonName }}</span><h2 style="font-family:'Young Serif',serif;font-weight:400;font-size:32px;margin:4px 0 0;">What's happening around Southeast Michigan</h2></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:14px;">
+        <sc-for list="{{ events }}" as="e" hint-placeholder-count="4">
+          <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:10px;padding:18px 20px;display:flex;gap:16px;">
+            <span style="flex:none;width:56px;height:56px;border-radius:6px;background:var(--accSoft,#F4E0C2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;text-align:center;line-height:1.1;">{{ e.when }}</span>
+            <div style="display:flex;flex-direction:column;gap:4px;"><span style="font-family:'Young Serif',serif;font-size:18px;line-height:1.25;">{{ e.name }}</span><span style="font-size:14px;color:#5E5444;">{{ e.where }}</span></div>
+          </div>
+        </sc-for>
+      </div>
+      <span style="font-size:13px;color:#7A6E5C;">Dates change year to year, so check each event's site before you go.</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:18px;">
+      <div><span style="font-family:'Caveat',cursive;font-size:28px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">People I trust</span><h2 style="font-family:'Young Serif',serif;font-weight:400;font-size:32px;margin:4px 0 0;">My go-to local pros</h2></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:14px;">
+        <sc-for list="{{ pros }}" as="p" hint-placeholder-count="8">
+          <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:6px;">
+            <span style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7A6E5C;">{{ p.cat }}</span>
+            <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#8A7D66;background:#F6EFE0;padding:6px 8px;border-radius:4px;">add business name</span>
+            <span style="font-size:14px;line-height:1.5;color:#5E5444;">{{ p.note }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <span style="font-size:13px;color:#7A6E5C;">I don't get paid for referrals. These are just people who've done right by my clients.</span>
+    </div>
+  </section>
+</sc-if>
+
+<!-- SAVED -->
+<sc-if value="{{ isSaved }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="Saved" style="max-width:1200px;margin:0 auto;padding:36px 24px 64px;display:flex;flex-direction:column;gap:28px;">
+    <div>
+      <h1 style="font-family:'Young Serif',serif;font-weight:400;font-size:40px;margin:0;">Your saved homes</h1>
+      <p style="margin:8px 0 0;color:#5E5444;font-size:16px;max-width:640px;line-height:1.55;">Hearts are saved on this device, no account needed. Add your phone to get price-drop texts and see your list anywhere.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:16px;">
+      <sc-if value="{{ signedOut }}" hint-placeholder-val="{{ true }}">
+        <div style="background:var(--accSoft,#F4E0C2);border-radius:12px;padding:22px 24px;display:flex;flex-direction:column;gap:12px;align-items:start;">
+          <span style="font-size:17px;"><strong>No password, ever.</strong> We'll text you a 6-digit code.</span>
+          <button onClick="{{ openSignIn }}" style="border:0;background:#23211E;color:#FBF6EC;font-size:15px;font-weight:600;padding:12px 18px;border-radius:6px;cursor:pointer;">Sync with my phone</button>
+        </div>
+      </sc-if>
+      <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:12px;padding:22px 24px;display:flex;flex-direction:column;gap:10px;align-items:start;">
+        <span style="font-family:'Young Serif',serif;font-size:21px;">Shopping with someone?</span>
+        <span style="font-size:15px;color:#5E5444;line-height:1.5;">{{ partnerText }}</span>
+        <button onClick="{{ invitePartner }}" style="border:1px solid #23211E;background:transparent;font-size:15px;font-weight:600;padding:11px 16px;border-radius:6px;cursor:pointer;">{{ partnerBtn }}</button>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <h2 style="font-family:'Young Serif',serif;font-weight:400;font-size:26px;margin:0;">Homes you've hearted</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:20px;">
+        <sc-for list="{{ favList }}" as="l" hint-placeholder-count="0">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <dc-import name="Listing Card" l="{{ l }}" hint-size="100%,380px"></dc-import>
+            <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;gap:6px;">
+                <sc-for list="{{ l.takes }}" as="t" hint-placeholder-count="3">
+                  <button onClick="{{ t.onClick }}" style="flex:1;border:1px solid #E0D4BC;background:{{ t.bg }};color:#23211E;font-size:14px;font-weight:600;padding:9px 0;border-radius:6px;cursor:pointer;">{{ t.label }}</button>
+                </sc-for>
+              </div>
+              <sc-if value="{{ l.hasPartner }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:14px;color:#5E5444;">{{ l.partnerLine }}</span>
+              </sc-if>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:#7A6E5C;">
+                <span>{{ l.scoreText }}</span>
+                <button onClick="{{ l.onAlert }}" style="border:0;background:transparent;font-size:13px;font-weight:600;color:#23211E;cursor:pointer;padding:4px 0;">{{ l.alertText }}</button>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <sc-if value="{{ noFavs }}" hint-placeholder-val="{{ true }}">
+        <div style="color:#7A6E5C;font-size:15px;">Tap the ♡ on any home to keep it here.</div>
+      </sc-if>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <h2 style="font-family:'Young Serif',serif;font-weight:400;font-size:26px;margin:0;">Saved searches</h2>
+      <sc-for list="{{ searches }}" as="s" hint-placeholder-count="0">
+        <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:10px;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div><div style="font-size:16px;font-weight:600;">{{ s.name }}</div><div style="font-size:13px;color:#7A6E5C;margin-top:2px;">Texting you new matches · {{ s.count }} homes now</div></div>
+          <div style="display:flex;gap:8px;">
+            <button onClick="{{ s.onRun }}" style="border:0;background:#23211E;color:#FBF6EC;font-weight:600;padding:10px 14px;border-radius:6px;cursor:pointer;">View</button>
+            <button onClick="{{ s.onRemove }}" style="border:1px solid #E0D4BC;background:transparent;color:#5E5444;padding:10px 14px;border-radius:6px;cursor:pointer;">Remove</button>
+          </div>
+        </div>
+      </sc-for>
+      <sc-if value="{{ noSearches }}" hint-placeholder-val="{{ true }}">
+        <div style="color:#7A6E5C;font-size:15px;">None yet. Set your filters on Find a home and tap "Text me new matches."</div>
+      </sc-if>
+    </div>
+  </section>
+</sc-if>
+
+<!-- MY HUB -->
+<sc-if value="{{ isHub }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="My Hub" style="max-width:1100px;margin:0 auto;padding:36px 24px 64px;display:flex;flex-direction:column;gap:28px;">
+    <div>
+      <span style="font-family:'Caveat',cursive;font-size:30px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">Just for my clients</span>
+      <h1 style="font-family:'Young Serif',serif;font-weight:400;font-size:44px;margin:6px 0 0;">My Hub</h1>
+    </div>
+    <sc-if value="{{ hubLocked }}" hint-placeholder-val="{{ true }}">
+      <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:12px;padding:32px;display:flex;flex-direction:column;gap:14px;align-items:start;max-width:620px;">
+        <span style="font-family:'Young Serif',serif;font-size:24px;">Your deal and your home, in one spot</span>
+        <span style="font-size:16px;line-height:1.6;color:#5E5444;">Under contract? Follow every step to closing. Already own? Watch your home's value each month. Sign in with your phone, no password.</span>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button onClick="{{ openSignIn }}" style="border:0;background:#23211E;color:#FBF6EC;font-size:15px;font-weight:600;padding:12px 18px;border-radius:6px;cursor:pointer;">Sign in with phone</button>
+          <button onClick="{{ demoHub }}" style="border:1px solid #23211E;background:transparent;font-size:15px;font-weight:600;padding:11px 18px;border-radius:6px;cursor:pointer;">Preview with sample data</button>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ hubOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:28px;">
+        <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:12px;overflow:hidden;">
+          <div style="padding:24px 26px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:end;border-bottom:1px solid #E8DFCC;">
+            <div><span style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7A6E5C;">Your purchase</span><div style="font-family:'Young Serif',serif;font-size:28px;margin-top:4px;">1118 Vinsetta Blvd, Royal Oak</div></div>
+            <div style="text-align:right;"><div style="font-family:'Young Serif',serif;font-size:28px;">{{ deal.daysLeft }} days</div><div style="font-size:13px;color:#7A6E5C;">until closing on {{ deal.closeDate }}</div></div>
+          </div>
+          <div style="padding:8px 26px 0;"><div style="height:10px;border-radius:6px;background:#F1E8D6;overflow:hidden;margin-top:16px;"><div style="height:100%;width:{{ deal.pct }};background:var(--acc,#E3A857);border-radius:6px;"></div></div></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:28px;padding:24px 26px 28px;">
+            <div style="display:flex;flex-direction:column;">
+              <sc-for list="{{ deal.steps }}" as="s" hint-placeholder-count="7">
+                <div style="display:grid;grid-template-columns:32px 1fr;gap:14px;">
+                  <div style="display:flex;flex-direction:column;align-items:center;">
+                    <span style="width:28px;height:28px;border-radius:50%;border:2px solid #23211E;background:{{ s.dotBg }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">{{ s.mark }}</span>
+                    <span style="flex:1;width:2px;background:#E8DFCC;min-height:16px;"></span>
+                  </div>
+                  <div style="padding-bottom:16px;">
+                    <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;"><span style="font-size:16px;font-weight:{{ s.weight }};">{{ s.title }}</span><span style="font-size:13px;color:#7A6E5C;">{{ s.date }}</span></div>
+                    <div style="font-size:14px;color:#5E5444;line-height:1.5;margin-top:2px;">{{ s.desc }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div style="background:var(--panel,#7A4A2E);color:#FBF6EC;border-radius:10px;padding:22px;display:flex;flex-direction:column;gap:8px;">
+                <span style="font-family:'Caveat',cursive;font-size:26px;line-height:1;color:var(--acc,#E3A857);font-weight:700;">What's next</span>
+                <span style="font-family:'Young Serif',serif;font-size:22px;">{{ deal.nextTitle }}</span>
+                <span style="font-size:15px;line-height:1.55;color:#F1E9DB;">{{ deal.nextDesc }}</span>
+              </div>
+              <div style="background:#FBF8F1;border:1px solid #E8DFCC;border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;font-size:15px;">
+                <span style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7A6E5C;">Your team</span>
+                <span><strong>Christina Hunt</strong> · (313) 555-0142</span>
+                <span>Lender · <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#8A7D66;">lender name</span></span>
+                <span>Title company · <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#8A7D66;">title co. name</span></span>
+              </div>
+              <div style="border:2px solid #9E3B2C;border-radius:10px;padding:16px 18px;font-size:14px;line-height:1.5;"><strong style="color:#9E3B2C;">Wire fraud warning:</strong> I will never email you wiring instructions. Always call the title company at a number you know before sending money.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:22px;">
+          <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:12px;padding:26px;display:flex;flex-direction:column;gap:14px;">
+            <span style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7A6E5C;">Home value tracker</span>
+            <sc-if value="{{ noHomeAddr }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <span style="font-family:'Young Serif',serif;font-size:22px;">Already own? Track your home's value.</span>
+                <input value="{{ homeAddrDraft }}" onChange="{{ onHomeAddr }}" placeholder="Your home address" style="font-size:16px;padding:13px 15px;border-radius:6px;border:1px solid #E0D4BC;background:#FBF8F1;outline:none;">
+                <button onClick="{{ saveHomeAddr }}" style="align-self:start;border:0;background:#23211E;color:#FBF6EC;font-size:15px;font-weight:600;padding:12px 18px;border-radius:6px;cursor:pointer;">Track my home</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ hasHomeAddr }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <span style="font-size:15px;color:#5E5444;">{{ hv.addr }}</span>
+                <div style="display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;"><span style="font-family:'Young Serif',serif;font-size:40px;line-height:1;">{{ hv.value }}</span><span style="font-size:15px;font-weight:600;color:#4F7A3E;">{{ hv.change }}</span></div>
+                <div style="display:flex;align-items:end;gap:6px;height:90px;">
+                  <sc-for list="{{ hv.bars }}" as="b" hint-placeholder-count="12"><div style="flex:1;height:{{ b.h }};background:{{ b.bg }};border-radius:3px 3px 0 0;"></div></sc-for>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:#7A6E5C;"><span>12 months ago</span><span>This month</span></div>
+                <span style="font-size:13px;color:#7A6E5C;line-height:1.5;">Estimate from recent nearby sales. Updated monthly. Text me for a real opinion.</span>
+              </div>
+            </sc-if>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div style="background:var(--accSoft,#F4E0C2);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:8px;">
+              <span style="font-family:'Caveat',cursive;font-size:28px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">Happy home-iversary</span>
+              <span style="font-family:'Young Serif',serif;font-size:22px;line-height:1.25;">Each year on your closing date, I'll text you a value update and a little something from my kitchen.</span>
+            </div>
+            <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:10px;align-items:start;">
+              <span style="font-family:'Young Serif',serif;font-size:21px;">Thinking of selling?</span>
+              <span style="font-size:15px;color:#5E5444;line-height:1.55;">Start with my seller prep list. It covers repairs, staging, and whether your city requires a point-of-sale inspection.</span>
+              <button onClick="{{ goSellList }}" style="border:1px solid #23211E;background:transparent;font-size:15px;font-weight:600;padding:11px 16px;border-radius:6px;cursor:pointer;">Open seller prep list</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </section>
+</sc-if>
+
+<!-- KITCHEN -->
+<sc-if value="{{ isKitchen }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="Kitchen" style="max-width:1200px;margin:0 auto;padding:36px 24px 64px;display:flex;flex-direction:column;gap:26px;">
+    <div style="display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;">
+      <div>
+        <span style="font-family:'Caveat',cursive;font-size:30px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">Christina's kitchen</span>
+        <h1 style="font-family:'Young Serif',serif;font-weight:400;font-size:44px;margin:6px 0 0;">What's cooking this {{ kitchenName }}</h1>
+      </div>
+      <div style="display:flex;gap:4px;background:#F1E8D6;padding:4px;border-radius:6px;">
+        <sc-for list="{{ seasonTabs }}" as="t" hint-placeholder-count="4">
+          <button onClick="{{ t.onClick }}" style="border:0;background:{{ t.bg }};color:#23211E;font-size:14px;font-weight:600;padding:9px 16px;border-radius:4px;cursor:pointer;">{{ t.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:28px;align-items:start;">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <sc-for list="{{ recipes }}" as="r" hint-placeholder-count="3">
+          <article style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:12px;overflow:hidden;">
+            <div style="height:12px;background-color:var(--gingB,#FBF8F1);background-image:linear-gradient(90deg,var(--gingC,rgba(196,98,45,.45)) 50%,transparent 50%),linear-gradient(var(--gingC,rgba(196,98,45,.45)) 50%,transparent 50%);background-size:12px 12px;"></div>
+            <button onClick="{{ r.onToggle }}" style="all:unset;cursor:pointer;display:grid;grid-template-columns:140px 1fr;width:100%;box-sizing:border-box;">
+              <div style="min-height:140px;background:repeating-linear-gradient(135deg,#EFE5D0 0 10px,#F6EFE0 10px 20px);display:flex;align-items:center;justify-content:center;"><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#8A7D66;">dish photo</span></div>
+              <div style="padding:18px 22px;display:flex;flex-direction:column;gap:6px;">
+                <span style="font-size:13px;color:#7A6E5C;">{{ r.time }} · serves {{ r.serves }}</span>
+                <span style="font-family:'Young Serif',serif;font-size:23px;line-height:1.15;">{{ r.name }}</span>
+                <span style="font-size:15px;line-height:1.5;color:#5E5444;">{{ r.note }}</span>
+                <span style="font-size:14px;font-weight:600;color:var(--ink,#8A4B2E);margin-top:4px;">{{ r.cta }}</span>
+              </div>
+            </button>
+            <sc-if value="{{ r.open }}" hint-placeholder-val="{{ false }}">
+              <div style="border-top:1px solid #E8DFCC;padding:22px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;">
+                <div>
+                  <div style="font-family:'Caveat',cursive;font-size:24px;color:var(--ink,#8A4B2E);font-weight:700;margin-bottom:8px;">You'll need</div>
+                  <div style="display:flex;flex-direction:column;gap:8px;">
+                    <sc-for list="{{ r.ingredients }}" as="i" hint-placeholder-count="5"><div style="font-size:15px;line-height:1.45;padding-bottom:8px;border-bottom:1px dashed #E8DFCC;">{{ i }}</div></sc-for>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-family:'Caveat',cursive;font-size:24px;color:var(--ink,#8A4B2E);font-weight:700;margin-bottom:8px;">How to</div>
+                  <div style="display:flex;flex-direction:column;gap:12px;">
+                    <sc-for list="{{ r.steps }}" as="s" hint-placeholder-count="3"><div style="display:flex;gap:12px;font-size:15px;line-height:1.5;"><span style="flex:none;width:26px;height:26px;border-radius:50%;background:var(--acc,#E3A857);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">{{ s.n }}</span><span>{{ s.text }}</span></div></sc-for>
+                  </div>
+                  <button onClick="{{ printPage }}" class="noprint" style="margin-top:16px;border:1px solid #23211E;background:transparent;font-weight:600;padding:10px 14px;border-radius:6px;cursor:pointer;">Print recipe card</button>
+                </div>
+              </div>
+            </sc-if>
+          </article>
+        </sc-for>
+      </div>
+      <aside style="background:#2F3430;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:5px 5px;border:10px solid #8B6A4A;color:#FBF6EC;border-radius:8px;padding:26px;display:flex;flex-direction:column;gap:14px;position:sticky;top:110px;">
+        <span style="font-family:'Caveat',cursive;font-size:28px;line-height:1;color:var(--acc,#E3A857);font-weight:700;">Around the house this {{ kitchenName }}</span>
+        <h3 style="font-family:'Young Serif',serif;font-weight:400;font-size:24px;margin:0;">Little jobs that protect your biggest investment</h3>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <sc-for list="{{ chores }}" as="c" hint-placeholder-count="5">
+            <button onClick="{{ c.onToggle }}" style="all:unset;cursor:pointer;display:flex;gap:12px;align-items:start;font-size:15px;line-height:1.45;">
+              <span style="flex:none;width:22px;height:22px;border-radius:4px;border:2px solid var(--acc,#E3A857);background:{{ c.boxBg }};color:#23211E;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">{{ c.mark }}</span>
+              <span style="text-decoration:{{ c.strike }};color:{{ c.color }};">{{ c.text }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <button onClick="{{ goPros }}" style="all:unset;cursor:pointer;font-size:14px;color:#D8D2C6;line-height:1.5;text-decoration:underline;text-underline-offset:3px;">Need a roofer, plumber, or furnace tech? See my trusted pros.</button>
+      </aside>
+    </div>
+  </section>
+</sc-if>
+
+<!-- CHECKLISTS -->
+<sc-if value="{{ isLists }}" hint-placeholder-val="{{ false }}">
+  <section data-screen-label="Checklists" style="max-width:960px;margin:0 auto;padding:36px 24px 64px;display:flex;flex-direction:column;gap:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;">
+      <div>
+        <span style="font-family:'Caveat',cursive;font-size:30px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">Your to-do list</span>
+        <h1 style="font-family:'Young Serif',serif;font-weight:400;font-size:44px;margin:6px 0 0;">One step at a time</h1>
+      </div>
+      <div style="display:flex;gap:4px;background:#F1E8D6;padding:4px;border-radius:6px;">
+        <sc-for list="{{ clTabs }}" as="t" hint-placeholder-count="3">
+          <button onClick="{{ t.onClick }}" style="border:0;background:{{ t.bg }};color:#23211E;font-size:15px;font-weight:600;padding:10px 18px;border-radius:4px;cursor:pointer;">{{ t.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:10px;padding:20px 22px;display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;justify-content:space-between;font-size:15px;"><strong>{{ clProgress.text }}</strong><span style="color:#7A6E5C;">Saved on this device</span></div>
+      <div style="height:10px;border-radius:6px;background:#F1E8D6;overflow:hidden;"><div style="height:100%;width:{{ clProgress.pct }};background:var(--acc,#E3A857);border-radius:6px;transition:width .3s;"></div></div>
+    </div>
+    <sc-for list="{{ phases }}" as="ph" hint-placeholder-count="4">
+      <div style="display:grid;grid-template-columns:56px 1fr;gap:18px;">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <span style="width:48px;height:48px;border-radius:50%;background:{{ ph.dotBg }};border:2px solid #23211E;display:flex;align-items:center;justify-content:center;font-family:'Young Serif',serif;font-size:20px;">{{ ph.n }}</span>
+          <span style="flex:1;width:2px;background:#E8DFCC;margin-top:6px;"></span>
+        </div>
+        <div style="padding-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;">
+            <h2 style="font-family:'Young Serif',serif;font-weight:400;font-size:26px;margin:8px 0 2px;">{{ ph.title }}</h2>
+            <span style="font-size:14px;color:#7A6E5C;">{{ ph.when }} · {{ ph.count }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
+            <sc-for list="{{ ph.items }}" as="it" hint-placeholder-count="4">
+              <button onClick="{{ it.onToggle }}" style="all:unset;cursor:pointer;display:flex;gap:14px;align-items:start;background:#FFFDF8;border:1px solid #E8DFCC;border-radius:10px;padding:14px 16px;box-sizing:border-box;">
+                <span style="flex:none;width:24px;height:24px;border-radius:5px;border:2px solid #23211E;background:{{ it.boxBg }};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#23211E;">{{ it.mark }}</span>
+                <span style="display:flex;flex-direction:column;gap:3px;">
+                  <span style="font-size:16px;font-weight:500;text-decoration:{{ it.strike }};color:{{ it.color }};">{{ it.text }}</span>
+                  <span style="font-size:14px;color:#7A6E5C;line-height:1.45;">{{ it.tip }}</span>
+                </span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+    <sc-if value="{{ isMoveTab }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#FFFDF8;border:1px solid #E8DFCC;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div><span style="font-family:'Caveat',cursive;font-size:26px;line-height:1;color:var(--ink,#8A4B2E);font-weight:700;">Printable</span><div style="font-family:'Young Serif',serif;font-size:24px;">Box labels</div></div>
+          <button onClick="{{ printPage }}" class="noprint" style="border:0;background:#23211E;color:#FBF6EC;font-weight:600;padding:11px 16px;border-radius:6px;cursor:pointer;">Print labels</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;">
+          <sc-for list="{{ boxLabels }}" as="b" hint-placeholder-count="8">
+            <div style="border:2px dashed #23211E;border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:6px;">
+              <span style="font-family:'Young Serif',serif;font-size:22px;">{{ b }}</span>
+              <span style="font-size:12px;color:#7A6E5C;">Box ___ of ___ · Fragile ☐</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+    <div class="noprint" style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button onClick="{{ printPage }}" style="border:1px solid #23211E;background:transparent;font-weight:600;padding:12px 18px;border-radius:6px;cursor:pointer;">Print this list</button>
+      <a href="sms:+13135550142" style="text-decoration:none;background:#23211E;color:#FBF6EC;font-weight:600;padding:13px 18px;border-radius:6px;">Stuck on a step? Text me</a>
+    </div>
+  </section>
+</sc-if>
+
+</main>
+
+<footer style="background-color:#5B4330;background-image:repeating-linear-gradient(180deg,transparent 0 46px,rgba(0,0,0,.25) 46px 48px),repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 3px,transparent 3px 9px);color:#EFE5D2;border-top:10px solid #23211E;">
+  <div style="max-width:1200px;margin:0 auto;padding:44px 24px 96px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:28px;font-size:14px;line-height:1.6;">
+    <div>
+      <div style="font-family:'Young Serif',serif;font-size:22px;color:#FBF6EC;">Christina Hunt</div>
+      <div>Realtor® · Real Estate One</div>
+      <div>(313) 555-0142 · christina@example.com</div>
+    </div>
+    <div>Serving Wayne, Oakland, Macomb, Washtenaw & Livingston counties. Listing data provided by Realcomp II Ltd. via IDX, deemed reliable but not guaranteed.</div>
+    <div>Equal Housing Opportunity. Your saved homes stay on your device unless you choose to sync with your phone.</div>
+  </div>
+</footer>
+
+<a href="sms:+13135550142" class="noprint" style="position:fixed;right:20px;bottom:20px;z-index:40;text-decoration:none;background:#23211E;color:#FBF6EC;border-radius:10px;padding:12px 18px;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.25);border:2px solid var(--acc,#E3A857);">
+  <span style="font-weight:700;font-size:15px;">Text Christina</span>
+  <span style="font-size:12px;color:#D8D2C6;">Usually replies within an hour</span>
+</a>
+
+<sc-if value="{{ showDebug }}" hint-placeholder-val="{{ false }}">
+  <div class="noprint" style="position:fixed;left:16px;bottom:16px;z-index:70;background:#111;color:#eee;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;font-family:ui-monospace,Menlo,monospace;font-size:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);">
+    <span style="color:#9a9a9a;">DEBUG · seasonal theme · {{ themeLabel }}</span>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;">
+      <sc-for list="{{ debugOpts }}" as="o" hint-placeholder-count="5">
+        <button onClick="{{ o.onClick }}" style="font-family:inherit;font-size:12px;border:1px solid #444;background:{{ o.bg }};color:{{ o.color }};padding:6px 10px;border-radius:4px;cursor:pointer;">{{ o.label }}</button>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ loginOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeLogin }}" style="position:fixed;inset:0;z-index:80;background:rgba(35,33,30,.45);display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div onClick="{{ stop }}" style="width:100%;max-width:420px;background:#FBF8F1;border-radius:12px;padding:30px;display:flex;flex-direction:column;gap:14px;box-shadow:0 30px 80px rgba(0,0,0,.25);">
+      <h2 style="font-family:'Young Serif',serif;font-weight:400;font-size:28px;margin:0;">{{ loginTitle }}</h2>
+      <p style="margin:0;color:#5E5444;font-size:15px;line-height:1.55;">{{ loginSub }}</p>
+      <sc-if value="{{ loginPhoneStep }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <input value="{{ phone }}" onChange="{{ onPhone }}" placeholder="(313) 555-0100" inputmode="tel" style="font-size:20px;padding:14px 16px;border-radius:6px;border:1px solid #E0D4BC;background:#FFFDF8;outline:none;">
+          <button onClick="{{ sendCode }}" style="border:0;background:{{ sendBg }};color:#FBF6EC;font-size:16px;font-weight:600;padding:14px;border-radius:6px;cursor:pointer;">Text me a code</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ loginCodeStep }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <input value="{{ code }}" onChange="{{ onCode }}" placeholder="••••••" inputmode="numeric" autocomplete="one-time-code" style="font-size:28px;text-align:center;letter-spacing:.4em;padding:14px 16px;border-radius:6px;border:1px solid #E0D4BC;background:#FFFDF8;outline:none;">
+          <button onClick="{{ verify }}" style="border:0;background:{{ verifyBg }};color:#FBF6EC;font-size:16px;font-weight:600;padding:14px;border-radius:6px;cursor:pointer;">Continue</button>
+          <span style="font-size:13px;color:#8A7D66;text-align:center;">Demo: any 6 digits works</span>
+        </div>
+      </sc-if>
+      <span style="font-size:12px;color:#8A7D66;line-height:1.5;">I'll only text about homes you asked about. Reply STOP anytime.</span>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;background:#23211E;color:#FBF6EC;padding:14px 20px;border-radius:10px;font-size:15px;box-shadow:0 12px 30px rgba(0,0,0,.2);max-width:calc(100vw - 40px);">{{ toast }}</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;season&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;auto&quot;,&quot;fall&quot;,&quot;winter&quot;,&quot;spring&quot;,&quot;summer&quot;],&quot;default&quot;:&quot;auto&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Seasonal theme&quot;},&quot;effects&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;off&quot;,&quot;subtle&quot;,&quot;festive&quot;],&quot;default&quot;:&quot;subtle&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Seasonal theme&quot;},&quot;debug&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Seasonal theme&quot;},&quot;showMap&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Search&quot;}}">
+const KEY = 'chuntHome_v2';
+const THEMES = {
+  fall:   { bg:'#F3ECDF', acc:'#E3A857', accSoft:'#F4E0C2', ink:'#8A4B2E', panel:'#7A4A2E', panelDeep:'#643C24', gingC:'rgba(196,98,45,.45)', gingB:'#FBF8F1' },
+  winter: { bg:'#F1F0EC', acc:'#B9CCD8', accSoft:'#E1E9EE', ink:'#8E2F25', panel:'#2F4B3C', panelDeep:'#233A2E', gingC:'rgba(35,33,30,.6)', gingB:'#A8392B' },
+  spring: { bg:'#F5F2EA', acc:'#E8B7C0', accSoft:'#F5E3E6', ink:'#7E4556', panel:'#566E51', panelDeep:'#455A41', gingC:'rgba(124,150,111,.5)', gingB:'#FBF8F1' },
+  summer: { bg:'#F6F1E4', acc:'#F2D27A', accSoft:'#F7EBC6', ink:'#7C5A2A', panel:'#3F5F7A', panelDeep:'#324D63', gingC:'rgba(63,95,122,.42)', gingB:'#FBF8F1' }
+};
+const SEASON_COPY = {
+  fall:   { eyebrow:'Cider-season house hunting', banner:'Fall in Southeast Michigan: the cider mills are open and the leaves are turning.', porch:'photo · porch with mums & pumpkins' },
+  winter: { eyebrow:'Cozy-season house hunting', banner:'Winter tip: homes listed now often see less competition.', porch:'photo · snowy porch with a wreath' },
+  spring: { eyebrow:'The spring market is blooming', banner:'Spring is the busiest season. Save a search so you hear about homes first.', porch:'photo · porch with tulips & a fresh doormat' },
+  summer: { eyebrow:'Front-porch season', banner:'Summer in Southeast Michigan: lake homes, art fairs, and Dream Cruise weekends.', porch:'photo · porch swing & lemonade' }
+};
+const LISTINGS = [
+  {id:'l1',address:'1118 Vinsetta Blvd',area:'Vinsetta Park',city:'Royal Oak',county:'Oakland',price:389000,beds:3,baths:2,sqft:1520,type:'House',year:1928,status:'New this week',x:54,y:30,desc:'Brick Royal Oak bungalow on a boulevard lined with old elms, with coved ceilings, a cozy fireplace, and a deep backyard made for summer cookouts.',features:['Walk or bike to downtown Royal Oak','Updated kitchen with a breakfast nook','Two-car garage off the alley','Royal Oak homes in this range rarely last two weekends']},
+  {id:'l2',address:'842 Granger Ave',area:'Burns Park',city:'Ann Arbor',county:'Washtenaw',price:645000,beds:4,baths:2.5,sqft:2300,type:'House',year:1922,status:'New this week',x:14,y:62,desc:'Burns Park craftsman with a wide front porch, built-in bookcases, and a sunny kitchen a short walk from the park and the University of Michigan campus.',features:['Original built-ins and oak floors','Walk to Burns Park Elementary','Finished third-floor bonus room','Ann Arbor has its own pace and pricing, and I\'ll help you read it']},
+  {id:'l3',address:'6120 Woodland Shores Dr',area:'Woodland Lake',city:'Brighton',county:'Livingston',price:529000,beds:3,baths:2,sqft:1850,type:'House',year:1964,status:'New this week',x:12,y:30,desc:'Lakefront cottage on all-sports Woodland Lake: a screened porch, a dock, and sunsets over the water every evening.',features:['80 feet of frontage with a private dock','Screened porch facing the lake','10 minutes to downtown Brighton','Ask me about lake association fees']},
+  {id:'l4',address:'455 Blunk St',area:'Old Village',city:'Plymouth',county:'Wayne',price:479000,beds:4,baths:2.5,sqft:2150,type:'House',year:1938,status:'Open Sun 1–3',x:32,y:52,desc:'Charming Old Village colonial with a porch swing, a refreshed kitchen, and a fenced yard, a stroll from Kellogg Park.',features:['Walk to Kellogg Park and the ice festival','New roof in 2023','Plymouth-Canton schools','A true front-porch neighborhood']},
+  {id:'l5',address:'1820 Leverette St',area:'Corktown',city:'Detroit',county:'Wayne',price:425000,beds:3,baths:2,sqft:1640,type:'Townhome',year:2019,status:'Open Sun 1–3',x:56,y:62,desc:'Newer-build townhome on a quiet Corktown street, a few blocks from Michigan Ave, Roosevelt Park, and the restored train station.',features:['Rooftop deck with downtown views','Attached garage, rare in Corktown','Low-maintenance: great for first-time buyers','Coffee, tacos and the farmers market within a short walk']},
+  {id:'l6',address:'1066 Wayburn St',area:'Grosse Pointe Park',city:'Grosse Pointe Park',county:'Wayne',price:459000,beds:4,baths:2.5,sqft:2400,type:'House',year:1926,status:'Price drop',x:76,y:58,desc:'Center-entrance colonial a short walk from Kercheval shops and Windmill Pointe Park, with a sunny eat-in kitchen and two-car garage.',features:['Grosse Pointe Public Schools','Walk to the Kercheval shops','Two-car garage and a mudroom','Lakefront park access for residents']},
+  {id:'l7',address:'612 Romeo St',area:'Downtown',city:'Rochester',county:'Oakland',price:412000,beds:3,baths:2,sqft:1700,type:'House',year:1952,status:'Open Sat 12–2',x:58,y:10,desc:'Tidy ranch a few blocks from Main Street Rochester. Close enough to walk to the holiday light show, quiet enough to hear the birds.',features:['Walk to Main Street shops and dining','Near the Paint Creek and Clinton River trails','Finished basement with a rec room','Rochester Community Schools']},
+  {id:'l8',address:'45110 Cherry Ln',area:'Shelby Township',city:'Shelby Twp',county:'Macomb',price:365000,beds:4,baths:2.5,sqft:2400,type:'House',year:1998,status:'Coming soon',x:68,y:14,desc:'Roomy colonial on a cul-de-sac with a first-floor laundry, a big deck, and plenty of space for a growing family.',features:['Cul-de-sac lot with a large deck','Utica Community Schools','Easy access to M-53','More house for the money than much of Oakland County']},
+  {id:'l9',address:'412 W Drayton St',area:'Ferndale',city:'Ferndale',county:'Oakland',price:319000,beds:3,baths:2,sqft:1380,type:'House',year:1951,status:'Coming soon',x:52,y:38,desc:'Bright Ferndale cape with an updated kitchen, finished basement, and a deep backyard. Walk to downtown Ferndale\'s restaurants and shops.',features:['Finished basement for a guest room or office','New windows in 2022','Walkable to 9 Mile shops and dinner spots','These go fast, so plan to see it in the first few days']},
+  {id:'l10',address:'15840 Ashton Ave',area:'Grandmont-Rosedale',city:'Detroit',county:'Wayne',price:189000,beds:3,baths:1.5,sqft:1450,type:'House',year:1940,status:'Open Sat 12–2',x:46,y:50,desc:'Classic brick bungalow with a cozy fireplace, refinished hardwoods, and a fenced yard on one of Detroit\'s most neighborly streets.',features:['Great starter home under $200k','Fenced yard, ready for a dog','Active neighborhood association and events','May qualify for down-payment assistance. Let\'s check']}
+];
+const HOODS = ['Detroit','Royal Oak','Ann Arbor','Plymouth','Grosse Pointe','Brighton','Rochester','Ferndale','Macomb County'];
+const DESTS = { detroit:{label:'Downtown Detroit',x:58,y:62}, annarbor:{label:'Downtown Ann Arbor',x:14,y:62}, troy:{label:'Troy',x:60,y:22}, dtw:{label:'DTW Airport',x:36,y:74} };
+const TOWNS = [
+  {id:'detroit',name:'Detroit',county:'Wayne',match:'Detroit',tag:'Historic neighborhoods, big porches, and a city on the rise.',vibe:'From Corktown rowhouses to Boston-Edison mansions and Grandmont-Rosedale bungalows, Detroit has more architectural variety than anywhere in the state, often at prices that surprise people.',schools:'Detroit Public Schools Community District, plus many charter and private options',range:'Sample: $150k–$500k+',around:'Q-Line on Woodward, I-75, I-94, M-10',fav:'Saturday morning at Eastern Market'},
+  {id:'royal-oak',name:'Royal Oak',county:'Oakland',match:'Royal Oak',tag:'Brick bungalows and a downtown you can walk to.',vibe:'Tree-lined streets, a busy downtown, the Detroit Zoo, and the Woodward Dream Cruise every August. Homes move quickly here.',schools:'Royal Oak Schools',range:'Sample: $250k–$500k',around:'I-696, I-75, and Woodward Ave',fav:'The Royal Oak Farmers Market'},
+  {id:'ann-arbor',name:'Ann Arbor',county:'Washtenaw',match:'Ann Arbor',tag:'College-town energy with craftsman charm.',vibe:'Home to the University of Michigan, Kerrytown, and the Huron River. Ann Arbor holds its value well and has its own market rhythm.',schools:'Ann Arbor Public Schools',range:'Sample: $350k–$800k',around:'US-23 and I-94; walkable and bike-friendly',fav:'The Ann Arbor Farmers Market in Kerrytown'},
+  {id:'plymouth',name:'Plymouth',county:'Wayne',match:'Plymouth',tag:'Small-town squares and front-porch neighborhoods.',vibe:'Kellogg Park sits at the heart of town, with concerts in summer and the ice festival in winter. A favorite for families wanting a walkable downtown.',schools:'Plymouth-Canton Community Schools',range:'Sample: $300k–$600k',around:'M-14, I-275, and quick access to DTW',fav:'A summer evening in Kellogg Park'},
+  {id:'grosse-pointe',name:'Grosse Pointe',county:'Wayne',match:'Grosse Pointe',tag:'Lakefront parks and classic colonials.',vibe:'Five lakeside communities with stately homes, walkable shopping on Kercheval and the Village, and parks along Lake St. Clair for residents.',schools:'Grosse Pointe Public Schools',range:'Sample: $300k–$900k+',around:'Jefferson Ave and I-94; about 20 minutes to downtown',fav:'A lakefront walk at one of the Pointes\' parks'},
+  {id:'brighton',name:'Brighton',county:'Livingston',match:'Brighton',tag:'Lake life with a cozy downtown.',vibe:'All-sports lakes, the Mill Pond, and more land for the money. Great for buyers who want a little breathing room.',schools:'Brighton Area Schools',range:'Sample: $300k–$700k',around:'I-96 and US-23',fav:'An ice cream on the Mill Pond boardwalk'},
+  {id:'rochester',name:'Rochester',county:'Oakland',match:'Rochester',tag:'Trails, a lit-up Main Street, and room to grow.',vibe:'Known for its holiday light show and the Paint Creek Trail. A charming downtown surrounded by quieter suburban streets.',schools:'Rochester Community Schools',range:'Sample: $300k–$700k',around:'M-59 and M-24',fav:'A bike ride on the Paint Creek Trail'},
+  {id:'ferndale',name:'Ferndale',county:'Oakland',match:'Ferndale',tag:'Creative, walkable, and welcoming.',vibe:'Small capes and bungalows a short walk from 9 Mile\'s restaurants, coffee, and shops. Homes often sell in the first weekend.',schools:'Ferndale Public Schools',range:'Sample: $220k–$400k',around:'Woodward Ave, I-696, and I-75',fav:'Dinner and a stroll on 9 Mile'}
+];
+const EVENTS = {
+  fall:[{name:'Cider mill season',when:'Sep–Nov',where:'Orchards across Oakland, Macomb & Livingston'},{name:'Arts, Beats & Eats',when:'Labor Day',where:'Downtown Royal Oak'},{name:'America\'s Thanksgiving Parade',when:'Nov',where:'Woodward Ave, Detroit'},{name:'Big Bright Light Show begins',when:'Late Nov',where:'Downtown Rochester'}],
+  winter:[{name:'Ice skating at Campus Martius',when:'Nov–Mar',where:'Downtown Detroit'},{name:'Plymouth Ice Festival',when:'Winter',where:'Kellogg Park, Plymouth'},{name:'Big Bright Light Show',when:'Thru early Jan',where:'Downtown Rochester'},{name:'Pączki Day',when:'Fat Tuesday',where:'Hamtramck bakeries'}],
+  spring:[{name:'Ann Arbor Film Festival',when:'Mar',where:'Downtown Ann Arbor'},{name:'Tigers Opening Day',when:'Late Mar / Apr',where:'Comerica Park, Detroit'},{name:'Flower Day',when:'May',where:'Eastern Market, Detroit'},{name:'Farmers markets reopen outdoors',when:'May',where:'Royal Oak, Plymouth, Ann Arbor & more'}],
+  summer:[{name:'Ford Fireworks',when:'Jun',where:'Detroit riverfront'},{name:'Ann Arbor Art Fair',when:'Jul',where:'Downtown Ann Arbor'},{name:'Woodward Dream Cruise',when:'Aug',where:'Woodward Ave, Ferndale to Pontiac'},{name:'Concerts in the park',when:'Summer Fri',where:'Kellogg Park, Plymouth'}]
+};
+const PROS = [
+  {cat:'Mortgage lender',note:'Local, responsive, and great with first-time buyers.'},{cat:'Home inspector',note:'Thorough, and explains things without scaring you.'},
+  {cat:'Roofer',note:'Honest about repair vs. replace.'},{cat:'Plumber',note:'Shows up when they say they will.'},
+  {cat:'Furnace & A/C',note:'Fair prices on tune-ups and replacements.'},{cat:'Movers',note:'Careful with old staircases and pianos.'},
+  {cat:'House cleaners',note:'Move-out and move-in deep cleans.'},{cat:'Handyman',note:'For the punch list after inspection.'}
+];
+const STORIES = [
+  {quote:'Christina answered every text, even the 10pm ones. We never felt rushed, and we love our bungalow.',who:'The Morales family',where:'Plymouth'},
+  {quote:'She knew which lakes had the best swimming before we did. We sold in Ferndale and bought in Brighton in the same month.',who:'Dana & Chris',where:'Brighton'},
+  {quote:'As first-time buyers we had a hundred questions. The checklist kept us calm and she handled the rest.',who:'Priya & Sam',where:'Royal Oak'}
+];
+const SEASONS = ['winter','spring','summer','fall'];
+const SEASON_LABEL = {fall:'Fall',winter:'Winter',spring:'Spring',summer:'Summer'};
+const RECIPES = {
+  fall:[
+    {id:'cider',name:'Apple Cider Donut Cake',time:'1 hr',serves:12,note:'Makes the whole house smell like a cider mill. It\'s my secret trick before an open house.',ingredients:['2 cups apple cider, simmered down to 1 cup','2½ cups flour','2 tsp baking powder, ½ tsp baking soda','1½ tsp cinnamon, ¼ tsp nutmeg','1 cup brown sugar + ½ cup melted butter','2 eggs and ½ cup buttermilk','Cinnamon sugar for the top'],steps:['Simmer cider until reduced by half, then let it cool.','Whisk the dry ingredients. In another bowl, mix butter, sugar, eggs, buttermilk and cider.','Fold together, pour into a greased bundt pan and bake at 350°F for 40 minutes.','Brush with butter and roll in cinnamon sugar while warm.']},
+    {id:'chili',name:'Moving-Day Chili',time:'1 hr 30',serves:8,note:'One pot feeds the whole moving crew, and it tastes even better on day two.',ingredients:['2 lb ground beef or turkey','1 onion, 1 bell pepper, 4 cloves garlic','2 cans kidney beans, drained','28 oz crushed tomatoes','3 tbsp chili powder, 1 tbsp cumin','Cheddar, sour cream, green onion to serve'],steps:['Brown the meat with onion and pepper; add garlic for the last minute.','Stir in spices, tomatoes and beans with a cup of water.','Simmer low for an hour, stirring now and then. Season to taste.']},
+    {id:'crisp',name:'Michigan Apple Crisp',time:'1 hr',serves:8,note:'Use Honeycrisp or Northern Spy from a local orchard. Serve warm with vanilla ice cream.',ingredients:['6 apples, sliced','¼ cup sugar, 1 tsp cinnamon, juice of ½ lemon','1 cup oats, ¾ cup flour','¾ cup brown sugar','½ cup cold butter, cubed'],steps:['Toss apples with sugar, cinnamon and lemon in a baking dish.','Rub oats, flour, brown sugar and butter together into crumbs; scatter over the top.','Bake at 375°F for 45 minutes until bubbling and golden.']}
+  ],
+  winter:[
+    {id:'paczki',name:'Fat Tuesday Pączki',time:'3 hr',serves:18,note:'A Hamtramck tradition worth the effort. Fill with raspberry or custard.',ingredients:['4 cups flour, 1 packet yeast','1 cup warm milk, ⅓ cup sugar','4 egg yolks, ¼ cup butter','Oil for frying','Jam or custard, powdered sugar'],steps:['Mix and knead the dough; let it rise until doubled.','Roll out, cut rounds, and let them rise again.','Fry at 350°F until golden, fill, and dust with sugar.']},
+    {id:'roast',name:'Sunday Pot Roast',time:'4 hr',serves:6,note:'Low and slow on a snowy afternoon. The leftovers make the best sandwiches.',ingredients:['3 lb chuck roast','Carrots, potatoes, onion','2 cups beef broth','Fresh thyme and rosemary'],steps:['Sear the roast on all sides.','Add vegetables, broth and herbs to the pot.','Cover and braise at 300°F for 3½ hours.']},
+    {id:'cocoa',name:'Slow-Cooker Hot Cocoa',time:'2 hr',serves:10,note:'I set this out at winter showings. Cold buyers become cozy buyers.',ingredients:['8 cups milk, 1 cup cream','1½ cups chocolate chips','½ cup cocoa, ½ cup sugar','Splash of vanilla, pinch of salt'],steps:['Add everything to a slow cooker.','Cook on low 2 hours, whisking occasionally.','Serve with marshmallows.']}
+  ],
+  spring:[
+    {id:'rhubarb',name:'Strawberry Rhubarb Crisp',time:'1 hr',serves:8,note:'The first rhubarb at the farmers market means spring is really here.',ingredients:['3 cups rhubarb, 2 cups strawberries','½ cup sugar, 2 tbsp cornstarch','Oat crumble topping'],steps:['Toss the fruit with sugar and cornstarch.','Top with crumble.','Bake at 375°F for 40 minutes.']},
+    {id:'asparagus',name:'Asparagus & Goat Cheese Tart',time:'45 min',serves:6,note:'Easy enough for a housewarming brunch.',ingredients:['1 sheet puff pastry','1 bunch asparagus','4 oz goat cheese','Lemon zest, olive oil'],steps:['Score and par-bake the pastry.','Spread goat cheese, top with asparagus.','Bake at 400°F for 15 minutes; finish with lemon zest.']},
+    {id:'lemon',name:'Sunny Lemon Bars',time:'1 hr',serves:16,note:'Bright, tart, and perfect for an open house.',ingredients:['Shortbread crust','4 eggs, 1½ cups sugar','½ cup lemon juice, zest of 2 lemons'],steps:['Bake the crust at 350°F for 18 minutes.','Whisk filling and pour over.','Bake 20 minutes; chill and dust with sugar.']}
+  ],
+  summer:[
+    {id:'cherry',name:'Traverse City Cherry Pie',time:'1 hr 30',serves:8,note:'Michigan tart cherries make the best pie. No debate.',ingredients:['Double pie crust','4 cups tart cherries, pitted','1 cup sugar, ¼ cup cornstarch','Almond extract, butter'],steps:['Toss cherries with sugar, cornstarch and almond.','Fill crust, dot with butter, add lattice top.','Bake at 400°F for 50 minutes.']},
+    {id:'corn',name:'Sweet Corn & Tomato Salad',time:'20 min',serves:6,note:'For backyard barbecues in your new yard.',ingredients:['4 ears sweet corn','2 cups cherry tomatoes','Red onion, basil','Lime, olive oil, salt'],steps:['Grill or boil corn; cut off the cob.','Toss with tomatoes, onion and basil.','Dress with lime and olive oil.']},
+    {id:'peach',name:'Grilled Peaches with Honey',time:'15 min',serves:4,note:'Five minutes on the grill turns peaches into dessert.',ingredients:['4 ripe peaches, halved','Honey','Vanilla ice cream or yogurt'],steps:['Grill cut-side down for 4 minutes.','Drizzle with honey.','Serve warm with ice cream.']}
+  ]
+};
+const CHORES = {
+  fall:['Clean gutters once the leaves drop','Swap the furnace filter','Shut off and drain outdoor faucets before first freeze','Test smoke and CO detectors','Reverse ceiling fans to clockwise'],
+  winter:['Keep the heat steady to prevent frozen pipes','Check for ice dams after big snows','Salt and shovel walkways for guests','Swap the furnace filter again'],
+  spring:['Check the sump pump before heavy rains','Look for shingles lost over winter','Service the A/C','Clean window screens'],
+  summer:['Check deck boards and re-seal if needed','Trim trees away from the roof','Clean the dryer vent','Water the foundation plantings during dry spells']
+};
+const CHECKLISTS = {
+  buy:[
+    {title:'Get ready',when:'2–3 months out',items:[['Check your credit score','Free at annualcreditreport.com. Higher scores mean better rates.'],['Get pre-approved by a lender','Sellers take your offer seriously. I can introduce you to local lenders.'],['Set a budget that includes closing costs','Plan on about 2–5% of the price, plus moving.'],['List your must-haves vs. nice-to-haves','Bedrooms, commute, yard, schools. Rank them.']]},
+    {title:'Go shopping',when:'Weeks 1–6',items:[['Save a search here so new homes text you','Good homes in Southeast Michigan can go in a weekend.'],['Tour homes and use tour notes','Rate each home on its listing page while you\'re there.'],['Ask about taxes, utilities and HOA fees','Taxes vary a lot from city to city here. I\'ll pull the real numbers.']]},
+    {title:'Under contract',when:'About 30–45 days',items:[['Send earnest money','Usually within 1–2 days of acceptance.'],['Schedule the home inspection','Within your inspection window. I\'ll attend with you.'],['Lock your rate and finish the loan file','Respond to lender requests quickly.'],['Shop homeowner\'s insurance','Your lender needs proof before closing.']]},
+    {title:'Closing & move-in',when:'Final week',items:[['Do the final walk-through','Make sure agreed repairs were done.'],['Bring photo ID and certified funds','Wire instructions only from your title company. Call to confirm.'],['Transfer utilities','See the Moving day tab for the full list.'],['Change the locks and celebrate','You\'re home!']]}
+  ],
+  sell:[
+    {title:'Prep the house',when:'4–6 weeks out',items:[['Declutter one room at a time','Pack up off-season things early. You\'re moving anyway.'],['Handle small repairs','Leaky faucets, sticky doors, burnt-out bulbs.'],['Deep clean, including windows','Buyers notice light.'],['Ask about a point-of-sale inspection','Some Southeast Michigan cities require one before you sell. I\'ll check yours.']]},
+    {title:'Get listed',when:'1–2 weeks out',items:[['Pricing chat with me','We\'ll look at recent sales on your street together.'],['Professional photos and staging','I schedule these for you.'],['Fill out the Seller\'s Disclosure Statement','Be honest. It protects you.']]},
+    {title:'Showings & offers',when:'Weeks 1–4',items:[['Keep it showing-ready','A quick 10-minute tidy each morning.'],['Step out during showings','Buyers relax when owners aren\'t home.'],['Review offers with me','Price is only one part. Terms matter too.']]},
+    {title:'Closing',when:'About 30–45 days',items:[['Schedule movers','Book early, especially in summer.'],['Cancel or transfer utilities','Set the end date for closing day.'],['Leave keys, garage remotes and manuals','A little welcome note is a kind touch.']]}
+  ],
+  move:[
+    {title:'Book & sort',when:'3–4 weeks out',items:[['Book movers or reserve a truck','Summer weekends and month-end fill up fast.'],['Start a donate pile','Many donation centers will pick up furniture for free.'],['Gather boxes and print room labels','Labels are at the bottom of this page.']]},
+    {title:'Set up utilities',when:'2 weeks out',items:[['Electric and gas','Most of the area is DTE Energy; some addresses use Consumers Energy. Check yours.'],['Water and sewer','Set up with your city or township.'],['Internet','Schedule install for move-in day or earlier.'],['Trash & recycling day','Your city\'s website will have the pickup schedule.']]},
+    {title:'Update your address',when:'1–2 weeks out',items:[['USPS change of address','Takes about five minutes online.'],['Driver\'s license & voter registration','Update through the Michigan Secretary of State.'],['Banks, employer, and subscriptions','Don\'t forget pharmacy and vet records.']]},
+    {title:'Move-in day',when:'The big day',items:[['Photograph meters at both homes','Proof of final and starting readings.'],['Find the water shut-off and breaker panel','Before you need them.'],['Make the beds first','Future you will thank you.'],['Say hi to a neighbor','The best part of a new street.']]}
+  ]
+};
+const FX = {
+  fall:   { colors:['#C4622D','#E3A857','#9E3B2C','#B5832F'], radius:'0 100% 0 100%', size:[12,20], dur:[11,17] },
+  winter: { colors:['#FFFFFF'], radius:'50%', size:[5,11], dur:[14,22], ring:true },
+  spring: { colors:['#F2C4CC','#E8B7C0','#F7D6DC'], radius:'60% 0 60% 0', size:[9,14], dur:[13,19] },
+  summer: { colors:['#F2D27A','#E9C25A','#F0DB98'], radius:'60% 0 60% 0', size:[8,13], dur:[14,20] }
+};
+const rnd = (i, k) => { const v = Math.sin((i + 1) * (k + 1) * 12.9898) * 43758.5453; return v - Math.floor(v); };
+const makeFx = (season, n, fixed) => {
+  const f = FX[season];
+  return React.createElement('div', { key: season + (fixed ? '-page' : '-hero'), 'data-fx': '', 'aria-hidden': true,
+    style: { position: fixed ? 'fixed' : 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: fixed ? 25 : -1 } },
+    Array.from({ length: n }, (_, i) => {
+      const s = f.size[0] + rnd(i, 1) * (f.size[1] - f.size[0]), dur = f.dur[0] + rnd(i, 2) * (f.dur[1] - f.dur[0]);
+      return React.createElement('span', { key: i, style: { position: 'absolute', left: (rnd(i, 3) * 100) + '%', top: -30,
+          animation: 'chFall ' + dur.toFixed(1) + 's linear ' + (-rnd(i, 4) * dur).toFixed(1) + 's infinite' } },
+        React.createElement('span', { style: { display: 'block', width: s, height: f.ring ? s : s * 0.75, borderRadius: f.radius,
+          background: f.colors[i % f.colors.length], opacity: (fixed ? 0.45 : 0.6) + rnd(i, 5) * 0.3,
+          boxShadow: f.ring ? '0 0 0 1px rgba(140,165,185,.45)' : 'none',
+          animation: 'chSway ' + (3 + rnd(i, 6) * 3).toFixed(1) + 's ease-in-out ' + (-rnd(i, 7) * 3).toFixed(1) + 's infinite' } }));
+    }));
+};
+const RATE_CATS = [['kitchen','Kitchen'],['layout','Layout & light'],['outside','Yard & outside'],['street','Street & neighborhood']];
+const BOX_LABELS = ['Kitchen','Living room','Primary bedroom','Bedroom 2','Bathroom','Office','Basement','Garage'];
+const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+const short = n => n >= 1e6 ? '$' + (n/1e6).toFixed(1) + 'M' : '$' + Math.round(n/1000) + 'k';
+const monthly = p => { const P=p*0.8, r=0.065/12, n=360; return Math.round(P*r/(1-Math.pow(1+r,-n)) + p*0.022/12 + 120); };
+const fmtPhone = d => { d=d.replace(/\D/g,'').slice(0,10); if(d.length<4) return d; if(d.length<7) return '('+d.slice(0,3)+') '+d.slice(3); return '('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6); };
+const commute = (l, k) => { const d = DESTS[k]; return Math.round(Math.hypot(l.x-d.x, (l.y-d.y)*0.8)*0.7 + 7); };
+const hash = s => { let h = 0; for (const c of s) h = (h*31 + c.charCodeAt(0)) >>> 0; return h; };
+const dayLabel = off => { const d = new Date(); d.setDate(d.getDate()+off); return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); };
+
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    let s = {};
+    try { s = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+    this.state = { page:'home', listingId:null, townId:null, favs:s.favs||[], user:s.user||null, searches:s.searches||[], checks:s.checks||{},
+      notes:s.notes||{}, takes:s.takes||{}, alertsOff:s.alertsOff||{}, partner:!!s.partner, homeAddr:s.homeAddr||'', homeAddrDraft:'', demo:false,
+      login:null, pending:null, phone:'', code:'', q:'', maxPrice:'any', beds:'0', type:'Any', county:'Any', dest:'none', maxMin:'30', clTab:'buy',
+      season:null, debugSeason:null, openRecipe:null, tourDay:null, tourSent:false, worthAddr:'', worthPhone:'', worthSent:false,
+      porchContact:'', porchSent:false, toast:null };
+  }
+  themeSeason() {
+    const p = this.props.season;
+    const auto = SEASONS[Math.floor(((new Date().getMonth() + 1) % 12) / 3)];
+    return this.state.debugSeason || (p && p !== 'auto' ? p : auto);
+  }
+  applyTheme() {
+    const t = THEMES[this.themeSeason()], r = document.documentElement.style;
+    Object.keys(t).forEach(k => r.setProperty('--' + k, t[k]));
+  }
+  componentDidMount() { this.applyTheme(); }
+  componentDidUpdate() {
+    this.applyTheme();
+    const { favs, user, searches, checks, notes, takes, alertsOff, partner, homeAddr } = this.state;
+    try { localStorage.setItem(KEY, JSON.stringify({ favs, user, searches, checks, notes, takes, alertsOff, partner, homeAddr })); } catch (e) {}
+  }
+  go(page, extra) { this.setState({ page, ...(extra||{}) }); window.scrollTo(0, 0); }
+  toast(msg) { this.setState({ toast: msg }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast: null }), 3200); }
+  filtered(f) {
+    const q = (f.q||'').trim().toLowerCase();
+    return LISTINGS.filter(l => (!q || (l.area+' '+l.city+' '+l.address+' '+l.county+' county').toLowerCase().includes(q))
+      && (f.maxPrice==='any' || l.price <= +f.maxPrice) && l.beds >= +f.beds && (f.type==='Any' || l.type===f.type)
+      && (!f.county || f.county==='Any' || l.county===f.county)
+      && (!f.dest || f.dest==='none' || commute(l, f.dest) <= +f.maxMin));
+  }
+  toggleFav(id) {
+    const has = this.state.favs.includes(id);
+    this.setState({ favs: has ? this.state.favs.filter(x=>x!==id) : [...this.state.favs, id] });
+    if (!has) this.toast('Saved. I\'ll text you if the price drops.');
+  }
+  runPending(p) {
+    if (!p) return;
+    if (p.kind==='search') this.addSearch();
+    if (p.kind==='tour') this.setState({ tourSent:true });
+  }
+  addSearch() {
+    const { q, maxPrice, beds, type, county, dest, maxMin } = this.state;
+    const parts = [q.trim() || 'All of Southeast Michigan'];
+    if (maxPrice!=='any') parts.push('up to ' + short(+maxPrice));
+    if (beds!=='0') parts.push(beds + '+ beds');
+    if (type!=='Any') parts.push(type.toLowerCase() + 's');
+    if (county!=='Any') parts.push(county + ' County');
+    if (dest!=='none') parts.push(maxMin + ' min to ' + DESTS[dest].label);
+    this.setState(s => ({ searches: [...s.searches, { id: Date.now(), name: parts.join(' · '), q, maxPrice, beds, type, county, dest, maxMin }] }));
+    this.toast('Search saved. I\'ll text you new matches.');
+  }
+  card(l) {
+    const st = this.state, fav = st.favs.includes(l.id), hasCommute = st.page === 'search' && st.dest !== 'none';
+    return { ...l, priceFmt: fmt(l.price), priceShort: short(l.price), sqftFmt: l.sqft.toLocaleString('en-US'),
+      heart: fav ? '♥' : '♡', favColor: fav ? '#B5482F' : '#23211E', favLabel: fav ? 'Saved' : 'Save home',
+      pinX: l.x + '%', pinY: l.y + '%', monthly: fmt(monthly(l.price)),
+      hasCommute, commuteText: hasCommute ? commute(l, st.dest) + ' min to ' + DESTS[st.dest].label : '',
+      onOpen: () => this.go('listing', { listingId: l.id, tourDay: null, tourSent: false }),
+      onFav: e => { e && e.stopPropagation && e.stopPropagation(); this.toggleFav(l.id); } };
+  }
+  renderVals() {
+    const st = this.state;
+    const season = this.themeSeason();
+    const kSeason = st.season || season;
+    const set = k => e => this.setState({ [k]: e.target.value });
+    const navDefs = [['home','Home'],['search','Find a home'],['towns','Towns'],['kitchen','Kitchen'],['lists','To-dos'],['saved','Saved' + (st.favs.length ? ' (' + st.favs.length + ')' : '')],['hub','My Hub']];
+    const activeNav = st.page === 'listing' ? 'search' : st.page;
+    const results = this.filtered(st).map(l => this.card(l));
+    const curRaw = LISTINGS.find(l => l.id === st.listingId) || LISTINGS[0];
+    const cur = this.card(curRaw);
+    cur.commutes = Object.keys(DESTS).map(k => ({ label: DESTS[k].label, min: commute(curRaw, k) }));
+    const days = [];
+    for (let i = 1; i <= 5; i++) { const d = new Date(); d.setDate(d.getDate() + i); days.push(d); }
+    const checksFor = tab => {
+      let total = 0, done = 0;
+      CHECKLISTS[tab].forEach((ph, pi) => ph.items.forEach((_, ii) => { total++; if (st.checks[tab+'-'+pi+'-'+ii]) done++; }));
+      return { total, done, pct: Math.round(done/total*100) + '%' };
+    };
+    const toggleCheck = k => this.setState(s => ({ checks: { ...s.checks, [k]: !s.checks[k] } }));
+    const tabProg = checksFor(st.clTab);
+    const note = st.notes[curRaw.id] || { r:{}, text:'' };
+    const setNote = patch => this.setState(s => { const n = s.notes[curRaw.id] || { r:{}, text:'' }; return { notes: { ...s.notes, [curRaw.id]: { ...n, ...patch(n) } } }; });
+    const scoreOf = id => { const n = st.notes[id]; if (!n) return null; const v = Object.values(n.r||{}).filter(Boolean); return v.length ? (v.reduce((a,b)=>a+b,0)/v.length).toFixed(1) : null; };
+    const partnerTake = id => ['Love it','Maybe','Pass'][hash(id) % 3];
+    const town = TOWNS.find(t => t.id === st.townId);
+    const loginStep = st.login;
+    const phoneOk = st.phone.replace(/\D/g,'').length === 10;
+    const codeOk = st.code.length === 6;
+    const loginCopy = {
+      search: ['Get texts for new matches','Add your mobile number and I\'ll text you when a new home fits this search. No password, ever.'],
+      tour: ['Where should I text you?','I\'ll confirm your tour time by text. No password, ever.'],
+      none: ['Sign in with your phone','Sync your saved homes and open My Hub. We\'ll text you a 6-digit code. No password.']
+    }[(st.pending && st.pending.kind) || 'none'];
+    const stepsRaw = [['Offer accepted','You and the sellers agreed on terms.',-12],['Earnest money sent','Deposited with the title company.',-11],['Home inspection','Done. The sellers agreed to fix the furnace venting.',-6],['Appraisal','The appraiser visits the home. You don\'t need to be there.',3],['Loan approval','Your lender issues final approval, called "clear to close."',10],['Final walk-through','We\'ll walk the house together the day before closing.',20],['Closing day','Sign, get your keys, and celebrate.',21]];
+    const curStep = stepsRaw.findIndex(s => s[2] > 0);
+    const hvBase = st.homeAddr ? 280000 + (hash(st.homeAddr) % 320000) : 0;
+    const hvSeries = Array.from({ length: 12 }, (_, i) => hvBase * (0.958 + i * 0.0038 + ((hash(st.homeAddr + i) % 10) - 5) / 1000));
+    const hvMin = Math.min(...hvSeries), hvMax = Math.max(...hvSeries);
+    const debug = (this.props.debug ?? true) || /debug/i.test(location.search + location.hash);
+    return {
+      nav: navDefs.map(([k, label]) => ({ label, bg: activeNav === k ? 'var(--acc,#E3A857)' : 'transparent', onClick: () => this.go(k, k === 'towns' ? { townId: null } : null) })),
+      signedIn: !!st.user, signedOut: !st.user, userLabel: st.user ? 'Signed in · ' + st.user.slice(-4) : '',
+      openSignIn: () => this.setState({ login: 'phone', pending: null }),
+      goHome: () => this.go('home'), goSearch: () => this.go('search'), goKitchen: () => this.go('kitchen', { openRecipe: RECIPES[season][0].id, season: null }), goLists: () => this.go('lists'),
+      goEvents: () => { this.setState({ page: 'towns', townId: null }); setTimeout(() => { const el = document.getElementById('events'); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 120, behavior: 'smooth' }); }, 60); },
+      goPros: () => { this.setState({ page: 'towns', townId: null }); setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 60); },
+      goSellList: () => this.go('lists', { clTab: 'sell' }),
+      isHome: st.page==='home', isSearch: st.page==='search', isListing: st.page==='listing', isSaved: st.page==='saved', isKitchen: st.page==='kitchen', isLists: st.page==='lists', isTowns: st.page==='towns', isHub: st.page==='hub',
+      seasonName: SEASON_LABEL[season].toLowerCase(), seasonEyebrow: SEASON_COPY[season].eyebrow, seasonBanner: SEASON_COPY[season].banner, porchCaption: SEASON_COPY[season].porch,
+      q: st.q, maxPrice: st.maxPrice, beds: st.beds, type: st.type, county: st.county, dest: st.dest, maxMin: st.maxMin,
+      onQ: set('q'), onMaxPrice: set('maxPrice'), onBeds: set('beds'), onType: set('type'), onCounty: set('county'), onDest: set('dest'), onMaxMin: set('maxMin'),
+      onHeroKey: e => { if (e.key === 'Enter') this.go('search'); },
+      hoods: HOODS.map(h => ({ name: h, onClick: () => this.go('search', { q: h.replace(' County','') }) })),
+      featured: LISTINGS.filter(l => l.status === 'New this week').slice(0, 3).map(l => this.card(l)),
+      eventsTop: EVENTS[season].slice(0, 3), events: EVENTS[season],
+      stories: STORIES,
+      playVideo: () => this.toast('Your welcome video will play here.'),
+      results, resultCount: results.length, noResults: results.length === 0, showMap: this.props.showMap ?? true,
+      clearFilters: () => this.setState({ q:'', maxPrice:'any', beds:'0', type:'Any', county:'Any', dest:'none' }),
+      saveSearch: () => st.user ? this.addSearch() : this.setState({ login:'phone', pending:{ kind:'search' } }),
+      cur, similar: LISTINGS.filter(l => l.id !== curRaw.id).sort((a,b) => Math.abs(a.price-curRaw.price) - Math.abs(b.price-curRaw.price)).slice(0,3).map(l => this.card(l)),
+      rateRows: RATE_CATS.map(([k, label]) => ({ label, dots: [1,2,3,4,5].map(v => ({ aria: label + ' ' + v + ' of 5',
+        bg: (note.r[k]||0) >= v ? 'var(--acc,#E3A857)' : '#FFFDF8', onClick: () => setNote(n => ({ r: { ...n.r, [k]: n.r[k] === v ? 0 : v } })) })) })),
+      noteText: note.text, onNoteText: e => { const v = e.target.value; setNote(() => ({ text: v })); },
+      noteStatus: (scoreOf(curRaw.id) ? 'Your score ' + scoreOf(curRaw.id) + ' / 5 · ' : '') + (st.partner ? 'Shared with your partner' : 'Saved on this device'),
+      tourDays: days.map((d, i) => ({ dow: d.toLocaleDateString('en-US',{weekday:'short'}), date: d.getDate(),
+        bg: st.tourDay === i ? 'var(--acc,#E3A857)' : 'transparent', color: st.tourDay === i ? '#23211E' : '#FBF6EC',
+        onClick: () => this.setState({ tourDay: i, tourSent: false }) })),
+      tourOpen: !st.tourSent, tourSent: st.tourSent,
+      tourLabel: st.tourDay != null ? days[st.tourDay].toLocaleDateString('en-US',{weekday:'long', month:'short', day:'numeric'}) : 'a day that works for you',
+      requestTour: () => st.user ? this.setState({ tourSent: true }) : this.setState({ login:'phone', pending:{ kind:'tour' } }),
+      noTown: !town, hasTown: !!town, closeTown: () => this.go('towns', { townId: null }),
+      towns: TOWNS.map(t => { const n = LISTINGS.filter(l => l.city.includes(t.match)).length; return { ...t, count: n + (n === 1 ? ' home' : ' homes') + ' for sale', onOpen: () => this.go('towns', { townId: t.id }) }; }),
+      town: town ? { ...town, facts: [{k:'Schools',v:town.schools},{k:'Typical range',v:town.range},{k:'Getting around',v:town.around},{k:'My favorite stop',v:town.fav}],
+        homes: LISTINGS.filter(l => l.city.includes(town.match)).map(l => this.card(l)), onSearch: () => this.go('search', { q: town.match }) } : { facts: [], homes: [] },
+      pros: PROS,
+      searches: st.searches.map(s => ({ ...s, count: this.filtered(s).length,
+        onRun: () => this.go('search', { q:s.q, maxPrice:s.maxPrice, beds:s.beds, type:s.type, county:s.county||'Any', dest:s.dest||'none', maxMin:s.maxMin||'30' }),
+        onRemove: () => this.setState(x => ({ searches: x.searches.filter(y => y.id !== s.id) })) })),
+      noSearches: st.searches.length === 0,
+      favList: LISTINGS.filter(l => st.favs.includes(l.id)).map(l => {
+        const mine = st.takes[l.id], theirs = partnerTake(l.id), sc = scoreOf(l.id), off = st.alertsOff[l.id];
+        return { ...this.card(l),
+          takes: ['Love it','Maybe','Pass'].map(t => ({ label: t, bg: mine === t ? 'var(--acc,#E3A857)' : '#FBF8F1', onClick: () => this.setState(s => ({ takes: { ...s.takes, [l.id]: s.takes[l.id] === t ? null : t } })) })),
+          hasPartner: st.partner, partnerLine: mine === 'Love it' && theirs === 'Love it' ? 'You both love this one. Want to see it?' : 'Your partner: ' + theirs,
+          scoreText: sc ? 'Tour score ' + sc + ' / 5' : 'Not toured yet',
+          alertText: off ? 'Price-drop texts: off' : 'Price-drop texts: on',
+          onAlert: () => this.setState(s => ({ alertsOff: { ...s.alertsOff, [l.id]: !s.alertsOff[l.id] } })) };
+      }),
+      noFavs: st.favs.length === 0,
+      partnerText: st.partner ? 'Your partner can see your hearts and tour notes, and add their own take on each home.' : 'Invite a partner, parent, or friend to see your hearts and add their take. They don\'t need an account either.',
+      partnerBtn: st.partner ? 'Copy share link' : 'Invite someone',
+      invitePartner: () => { try { navigator.clipboard && navigator.clipboard.writeText('https://christinahunthomes.com/s/' + (hash(String(st.user || 'guest')) % 99999)); } catch (e) {} this.setState({ partner: true }); this.toast('Share link copied. Text it to whoever is house hunting with you.'); },
+      hubLocked: !st.user && !st.demo, hubOpen: !!st.user || st.demo, demoHub: () => this.setState({ demo: true }),
+      deal: { daysLeft: 21, closeDate: dayLabel(21), pct: Math.round(12 / 33 * 100) + '%',
+        nextTitle: stepsRaw[curStep][0] + ' · ' + dayLabel(stepsRaw[curStep][2]), nextDesc: stepsRaw[curStep][1],
+        steps: stepsRaw.map((s, i) => ({ title: s[0], desc: s[1], date: dayLabel(s[2]), mark: i < curStep ? '✓' : '',
+          dotBg: i < curStep ? 'var(--acc,#E3A857)' : i === curStep ? '#23211E' : '#FFFDF8', weight: i === curStep ? 700 : 500 })) },
+      noHomeAddr: !st.homeAddr, hasHomeAddr: !!st.homeAddr, homeAddrDraft: st.homeAddrDraft,
+      onHomeAddr: set('homeAddrDraft'), saveHomeAddr: () => st.homeAddrDraft.trim() && this.setState({ homeAddr: st.homeAddrDraft.trim() }),
+      hv: st.homeAddr ? { addr: st.homeAddr, value: fmt(Math.round(hvSeries[11] / 1000) * 1000),
+        change: '▲ ' + ((hvSeries[11] / hvSeries[0] - 1) * 100).toFixed(1) + '% this year',
+        bars: hvSeries.map((v, i) => ({ h: Math.round(30 + (v - hvMin) / (hvMax - hvMin || 1) * 70) + '%', bg: i === 11 ? 'var(--acc,#E3A857)' : '#E8DFCC' })) } : { bars: [] },
+      kitchenName: SEASON_LABEL[kSeason].toLowerCase(), heroRecipe: RECIPES[season][0],
+      seasonTabs: ['fall','winter','spring','summer'].map(k => ({ label: SEASON_LABEL[k], bg: k === kSeason ? '#FFFDF8' : 'transparent', onClick: () => this.setState({ season: k, openRecipe: null }) })),
+      recipes: RECIPES[kSeason].map(r => ({ ...r, open: st.openRecipe === r.id, cta: st.openRecipe === r.id ? 'Close recipe' : 'Show the recipe →',
+        steps: r.steps.map((t, i) => ({ n: i+1, text: t })), onToggle: () => this.setState({ openRecipe: st.openRecipe === r.id ? null : r.id }) })),
+      printPage: () => window.print(),
+      chores: CHORES[kSeason].map((t, i) => { const k = 'chore-'+kSeason+'-'+i, on = !!st.checks[k];
+        return { text: t, mark: on ? '✓' : '', boxBg: on ? 'var(--acc,#E3A857)' : 'transparent', strike: on ? 'line-through' : 'none', color: on ? '#9C9284' : '#FBF6EC', onToggle: () => toggleCheck(k) }; }),
+      progressRows: [['buy','Buying a home'],['sell','Selling a home'],['move','Moving day']].map(([k, label]) => { const p = checksFor(k); return { label, pct: p.pct, text: p.done + ' of ' + p.total }; }),
+      clTabs: [['buy','I\'m buying'],['sell','I\'m selling'],['move','Moving day']].map(([k, label]) => ({ label, bg: st.clTab === k ? '#FFFDF8' : 'transparent', onClick: () => this.setState({ clTab: k }) })),
+      clProgress: { pct: tabProg.pct, text: tabProg.done + ' of ' + tabProg.total + ' done' },
+      isMoveTab: st.clTab === 'move', boxLabels: BOX_LABELS,
+      phases: CHECKLISTS[st.clTab].map((ph, pi) => {
+        const items = ph.items.map(([text, tip], ii) => { const k = st.clTab+'-'+pi+'-'+ii, on = !!st.checks[k];
+          return { text, tip, mark: on ? '✓' : '', boxBg: on ? 'var(--acc,#E3A857)' : '#FFFDF8', strike: on ? 'line-through' : 'none', color: on ? '#9C9284' : '#23211E', onToggle: () => toggleCheck(k), on }; });
+        const done = items.filter(i => i.on).length;
+        return { n: pi+1, title: ph.title, when: ph.when, count: done + '/' + items.length, dotBg: done === items.length ? 'var(--acc,#E3A857)' : '#FFFDF8', items };
+      }),
+      worthAddr: st.worthAddr, worthPhone: st.worthPhone, worthOpen: !st.worthSent, worthSent: st.worthSent,
+      onWorthAddr: set('worthAddr'), onWorthPhone: e => this.setState({ worthPhone: fmtPhone(e.target.value) }),
+      sendWorth: () => { if (st.worthAddr.trim() && st.worthPhone.replace(/\D/g,'').length === 10) this.setState({ worthSent: true }); else this.toast('Add your address and a 10-digit mobile number.'); },
+      porchContact: st.porchContact, onPorch: set('porchContact'), porchOpen: !st.porchSent, porchSent: st.porchSent,
+      sendPorch: () => { const v = st.porchContact.trim(); if (/@/.test(v) || v.replace(/\D/g,'').length === 10) this.setState({ porchSent: true }); else this.toast('Add an email or a 10-digit mobile number.'); },
+      showDebug: debug, themeLabel: (st.debugSeason ? 'preview: ' : 'auto: ') + SEASON_LABEL[season],
+      debugOpts: [[null,'Auto'],['spring','Spring'],['summer','Summer'],['fall','Fall'],['winter','Winter']].map(([k, label]) => {
+        const on = st.debugSeason === k; return { label, bg: on ? '#eee' : 'transparent', color: on ? '#111' : '#eee', onClick: () => this.setState({ debugSeason: k, season: null }) }; }),
+      loginOpen: !!loginStep, loginPhoneStep: loginStep === 'phone', loginCodeStep: loginStep === 'code',
+      loginTitle: loginStep === 'code' ? 'Check your texts' : loginCopy[0],
+      loginSub: loginStep === 'code' ? 'Enter the 6-digit code we sent to ' + st.phone + '.' : loginCopy[1],
+      phone: st.phone, code: st.code,
+      onPhone: e => this.setState({ phone: fmtPhone(e.target.value) }),
+      onCode: e => this.setState({ code: e.target.value.replace(/\D/g,'').slice(0,6) }),
+      sendBg: phoneOk ? '#23211E' : '#A39885', verifyBg: codeOk ? '#23211E' : '#A39885',
+      sendCode: () => phoneOk && this.setState({ login: 'code', code: '' }),
+      verify: () => { if (!codeOk) return; const p = st.pending; this.setState({ user: st.phone, login: null, pending: null, code: '' }, () => { this.runPending(p); if (!p) this.toast('You\'re signed in. Your saved homes now sync.'); }); },
+      closeLogin: () => this.setState({ login: null, pending: null }), stop: e => e.stopPropagation(),
+      heroFx: (this.props.effects ?? 'subtle') === 'subtle' ? makeFx(season, 14, false) : null,
+      pageFx: (this.props.effects ?? 'subtle') === 'festive' ? makeFx(season, 26, true) : null,
+      hasToast: !!st.toast, toast: st.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
